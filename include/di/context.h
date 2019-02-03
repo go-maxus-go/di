@@ -33,19 +33,21 @@ public:
         auto holder = std::make_unique<Holder<TAG>>();
         holder->creator = std::move(creator);
 
-		auto it = m_tag2holder.find(typeid(TAG).name());
+        auto it = m_tag2holder.find(typeid(TAG).hash_code());
         assert((it == m_tag2holder.end() || dynamic_cast<Holder<TAG>*>(it->second.get())->result)
                && "di: register resolved TAG is not allowed");
 
-        m_tag2holder.insert(it, std::make_pair(typeid(TAG).name(), std::move(holder)));
+        m_tag2holder.insert(it, std::make_pair(typeid(TAG).hash_code(), std::move(holder)));
     }
 
     template<class TAG>
     std::shared_ptr<typename TAG::type> resolve()
     {
-        const auto it = m_tag2holder.find(typeid(TAG).name());
-        if (it == m_tag2holder.end())
+        const auto it = m_tag2holder.find(typeid(TAG).hash_code());
+        if (it == m_tag2holder.end()) {
+            assert(!"di: trial to resolve not registered tag");
             return nullptr;
+        }
 
         auto holder = dynamic_cast<Holder<TAG>*>(it->second.get());
         if (holder->result)
@@ -63,7 +65,7 @@ public:
     }
 
 private:
-    std::unordered_map<const char *, std::unique_ptr<BaseHolder>> m_tag2holder;
+    std::unordered_map<size_t, std::unique_ptr<BaseHolder>> m_tag2holder;
 };
 
 } // namespace di
