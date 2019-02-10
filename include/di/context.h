@@ -54,7 +54,7 @@ public:
             return holder->result;
 
         holder->result = holder->creator();
-		assert(holder->result && "di: impossible to resolve dependency");
+        assert(holder->result && "di: impossible to resolve dependency");
 
         return holder->result;
     }
