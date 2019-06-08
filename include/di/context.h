@@ -68,4 +68,26 @@ private:
     std::unordered_map<size_t, std::unique_ptr<BaseHolder>> m_tag2holder;
 };
 
+class ContextWrapper
+{
+public:
+    ContextWrapper()
+        : m_ctx(std::make_shared<Context>())
+    {}
+    ~ContextWrapper()
+    {
+        m_ctx->clear();
+    }
+    operator ContextPtr()
+    {
+        return m_ctx;
+    }
+    ContextPtr operator->()
+    {
+        return *this;
+    }
+private:
+    ContextPtr m_ctx;
+};
+
 } // namespace di
