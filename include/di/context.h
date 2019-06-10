@@ -1,10 +1,7 @@
 #pragma once
 
-#include <cassert>
-
-#include <memory>
-#include <functional>
-#include <unordered_map>
+#include "details/fwd.h"
+#include "details/context_imp.h"
 
 #include "fwd.h"
 
@@ -13,81 +10,62 @@ namespace di {
 
 class Context
 {
-    struct BaseHolder
-    {
-        virtual ~BaseHolder() = default;
-    };
+    using ContextImpl = details::ContextImpl;
+    using ContextImplPtr = std::shared_ptr<ContextImpl>;
 
-    template<class TAG>
-    struct Holder : BaseHolder
-    {
-        using Type = typename TAG::type;
-        std::function<std::shared_ptr<Type>()> creator;
-        std::shared_ptr<Type> result;
-    };
-
+    template<class TAG> using Creator = details::Creator<TAG>;
+    template<class TAG> using ObjectPtr = details::ObjectPtr<TAG>;
 public:
-    template<class TAG>
-    void registerTag(std::function<std::shared_ptr<typename TAG::type>()> creator)
-    {
-        auto holder = std::make_unique<Holder<TAG>>();
-        holder->creator = std::move(creator);
-
-        auto it = m_tag2holder.find(typeid(TAG).hash_code());
-        assert((it == m_tag2holder.end() || dynamic_cast<Holder<TAG>*>(it->second.get())->result)
-               && "di: register resolved TAG is not allowed");
-
-        m_tag2holder.insert(it, std::make_pair(typeid(TAG).hash_code(), std::move(holder)));
-    }
-
-    template<class TAG>
-    std::shared_ptr<typename TAG::type> resolve()
-    {
-        const auto it = m_tag2holder.find(typeid(TAG).hash_code());
-        if (it == m_tag2holder.end()) {
-            assert(!"di: trial to resolve not registered tag");
-            return nullptr;
-        }
-
-        auto holder = dynamic_cast<Holder<TAG>*>(it->second.get());
-        if (holder->result)
-            return holder->result;
-
-        holder->result = holder->creator();
-        assert(holder->result && "di: impossible to resolve dependency");
-
-        return holder->result;
-    }
-
-    void clear()
-    {
-        m_tag2holder.clear();
-    }
-
-private:
-    std::unordered_map<size_t, std::unique_ptr<BaseHolder>> m_tag2holder;
-};
-
-class ContextWrapper
-{
-public:
-    ContextWrapper()
-        : m_ctx(std::make_shared<Context>())
+    Context()
+        : m_impl(std::make_shared<ContextImpl>())
+        , m_cleanup(true)
     {}
-    ~ContextWrapper()
+
+    Context(const Context & ctx)
+        : m_impl(ctx.m_impl)
+        , m_cleanup(false)
+    {}
+
+    Context(Context && ctx)
+        : m_impl(std::move(ctx.m_impl))
+        , m_cleanup(ctx.m_cleanup)
+    {}
+
+    ~Context()
     {
-        m_ctx->clear();
+        if (m_cleanup)
+            m_impl->clear();
     }
-    operator ContextPtr()
+
+    Context & operator = (const Context &) = delete;
+    Context & operator = (Context && ctx)
     {
-        return m_ctx;
-    }
-    ContextPtr operator->()
-    {
+        m_impl = std::move(ctx.m_impl);
+        m_cleanup = ctx.m_cleanup;
         return *this;
     }
+
+    template<class TAG>
+    void registerTag(Creator<TAG> creator)
+    {
+        m_impl->registerTag<TAG>(std::move(creator));
+    }
+
+    template<class TAG>
+    void registerTransientTag(Creator<TAG> creator)
+    {
+        m_impl->registerTransientTag<TAG>(std::move(creator));
+    }
+
+    template<class TAG>
+    ObjectPtr<TAG> resolve() const
+    {
+        return m_impl->resolve<TAG>();
+    }
+
 private:
-    ContextPtr m_ctx;
+    ContextImplPtr m_impl;
+    bool m_cleanup;
 };
 
 } // namespace di
