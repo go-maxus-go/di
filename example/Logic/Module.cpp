@@ -9,22 +9,22 @@
 #include "Impl/ParkingBreak.h"
 
 
-void Logic::registerModule(const di::ContextPtr & ctx)
+void Logic::registerModule(di::Context & ctx)
 {
-    ctx->registerTag<CarTag>([&ctx] {
+    ctx.registerTag<CarTag>([&ctx] {
         return std::make_shared<Car>(
-                    ctx->resolve<Model::EngineTag>(),
-                    ctx->resolve<RegularBreakTag>(),
-                    ctx->resolve<ParkingBreakTag>() );
+                    ctx.resolve<Model::EngineTag>(),
+                    ctx.resolve<RegularBreakTag>(),
+                    ctx.resolve<ParkingBreakTag>() );
     });
 
-    ctx->registerTag<RegularBreakTag>([&ctx] {
+    ctx.registerTag<RegularBreakTag>([&ctx] {
         return std::make_shared<RegularBreak>(
-                    ctx->resolve<Model::EngineTag>() );
+                    ctx.resolve<Model::EngineTag>() );
     });
 
-    ctx->registerTag<ParkingBreakTag>([&ctx] {
+    ctx.registerTag<ParkingBreakTag>([&ctx] {
         return std::make_shared<ParkingBreak>(
-                    ctx->resolve<Model::EngineTag>() );
+                    ctx.resolve<Model::EngineTag>() );
     });
 }

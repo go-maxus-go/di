@@ -5,6 +5,6 @@
 
 namespace Model {
 
-void registerModule(const di::ContextPtr &);
+void registerModule(di::Context &);
 
 } // namespace Model

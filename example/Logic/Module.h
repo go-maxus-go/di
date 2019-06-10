@@ -5,6 +5,6 @@
 
 namespace Logic {
 
-void registerModule(const di::ContextPtr &);
+void registerModule(di::Context &);
 
 } // namespace Logic

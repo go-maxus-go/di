@@ -7,9 +7,9 @@
 
 namespace Model {
 
-void registerModule(const di::ContextPtr & ctx)
+void registerModule(di::Context & ctx)
 {
-    ctx->registerTag<EngineTag>([]{ return std::make_shared<Engine>(); });
+    ctx.registerTag<EngineTag>([]{ return std::make_shared<Engine>(); });
 }
 
 } // namespace Model
