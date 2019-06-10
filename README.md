@@ -1,5 +1,5 @@
 # di
-The simplest **C++14** runtime dependency injection library.
+The simplest **C++17** runtime dependency injection library.
 ## Purpose
 The **di** was developed for the sake of practice. The main goal is to keep classes declarations separate from their definitions to reduce compilation time.
 
@@ -30,25 +30,22 @@ DECLARE_DI_TAG(InterfaceTag, Interface);
 int main()
 {
     // Create context
-    auto ctx = std::make_shared<di::Context>();
+    auto ctx = di::Context();
 
-    // Register tags
-    ctx->registerTag<InterfaceTag>([]{ return std::make_shared<Implementation>(); });
+    // Register tag
+    ctx.registerTag<InterfaceTag>([]{ return std::make_shared<Implementation>(); });
 
-    // Resolve tags
-    auto impl = ctx->resolve<InterfaceTag>();
+    // Resolve tag
+    auto impl = ctx.resolve<InterfaceTag>();
 
     // Profit
-    assert(impl->method() == 42);
-
-    // Don't forget to clear the context to avoid memory leaks
-    ctx->clear();
+    impl->method();
 }
 ```
 
 ## Full project example
-You can find more detailed example at the **example** folder. Also you can build it with:
+You can find more detailed example at the **example** folder. Also you can build and run it by using:
 
 ```
-cmake example && make
+cd example && cmake . && make && ./example
 ```
