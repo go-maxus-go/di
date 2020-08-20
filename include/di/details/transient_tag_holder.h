@@ -21,17 +21,17 @@ public:
         return resolved;
     }
 
-    std::any resolve() const override
+    std::any resolve(const Context& context) const override
     {
-        auto object = createObject();
+        auto object = createObject(context);
         setResolved();
         return object;
     }
 
 private:
-    auto createObject() const
+    auto createObject(const Context& context) const
     {
-        auto object = creator();
+        auto object = creator(context);
         if (object == nullptr)
             throw std::logic_error("di: creator produces null pointer object");
         return object;

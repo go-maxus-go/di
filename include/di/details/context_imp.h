@@ -9,7 +9,11 @@
 #include "transient_tag_holder.h"
 
 
-namespace di::details {
+namespace di {
+
+class Context;
+
+namespace details {
 
 class ContextImpl
 {
@@ -31,10 +35,10 @@ public:
     }
 
     template<class TAG>
-    ObjectPtr<TAG> resolve() const
+    ObjectPtr<TAG> resolve(const Context& context) const
     {
         ensureTagIsRegistered<TAG>();
-        return retrieveObject<TAG>();
+        return retrieveObject<TAG>(context);
     }
 
     void clear()
@@ -93,10 +97,10 @@ private:
     }
 
     template<class TAG>
-    auto retrieveObject() const
+    auto retrieveObject(const Context& context) const
     {
         auto it = m_tag2holder.find(hash<TAG>());
-        auto objectAny = it->second->resolve();
+        auto objectAny = it->second->resolve(context);
         return std::any_cast<ObjectPtr<TAG>>(objectAny);
     }
 
@@ -106,4 +110,5 @@ private:
     std::unordered_map<Hash, BaseTagHolderPtr> m_tag2holder;
 };
 
-} // namespace di::details
+} // namespace di
+} // namespace details

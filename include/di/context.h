@@ -8,6 +8,16 @@
 
 namespace di {
 
+namespace details {
+
+template<class TYPE, class ... TAGS>
+auto creatorFromTags(const di::Context & ctx, std::tuple<TAGS...>);
+
+template<class TYPE>
+auto defaultCreator(const di::Context & ctx);
+
+} // details
+
 class Context
 {
     using ContextImpl = details::ContextImpl;
@@ -15,34 +25,39 @@ class Context
 
     template<class TAG> using Creator = details::Creator<TAG>;
     template<class TAG> using ObjectPtr = details::ObjectPtr<TAG>;
+
 public:
     Context()
         : m_impl(std::make_shared<ContextImpl>())
-        , m_cleanup(true)
     {}
 
-    Context(const Context & ctx)
-        : m_impl(ctx.m_impl)
-        , m_cleanup(false)
-    {}
-
+    Context(const Context & ctx) = delete;
     Context(Context && ctx)
         : m_impl(std::move(ctx.m_impl))
-        , m_cleanup(ctx.m_cleanup)
     {}
-
-    ~Context()
-    {
-        if (m_cleanup)
-            m_impl->clear();
-    }
 
     Context & operator = (const Context &) = delete;
     Context & operator = (Context && ctx)
     {
         m_impl = std::move(ctx.m_impl);
-        m_cleanup = ctx.m_cleanup;
         return *this;
+    }
+
+public:
+    template<class TAG, class TYPE>
+    void registerTag()
+    {
+        registerTag<TAG>([](const auto & ctx) {
+            return details::defaultCreator<TYPE>(ctx);
+        });
+    }
+
+    template<class TAG, class TYPE, class ... TAGS>
+    void registerTag(std::tuple<TAGS...> tags)
+    {
+        registerTag<TAG>([&tags](const auto & ctx) {
+            return details::creatorFromTags<TYPE>(ctx, tags);
+        });
     }
 
     template<class TAG>
@@ -57,15 +72,46 @@ public:
         m_impl->registerTransientTag<TAG>(std::move(creator));
     }
 
+    template<class TAG, class TYPE>
+    void registerTransientTag()
+    {
+        registerTransientTag<TAG>([](const auto & ctx) {
+            return details::defaultCreator<TYPE>(ctx);
+        });
+    }
+
+    template<class TAG, class TYPE, class ... TAGS>
+    void registerTransientTag(std::tuple<TAGS...> tags)
+    {
+        registerTransientTag<TAG>([&tags](const auto & ctx) {
+            return details::creatorFromTags<TYPE>(ctx, tags);
+        });
+    }
+
     template<class TAG>
     ObjectPtr<TAG> resolve() const
     {
-        return m_impl->resolve<TAG>();
+        return m_impl->resolve<TAG>(*this);
     }
 
 private:
     ContextImplPtr m_impl;
-    bool m_cleanup;
 };
+
+namespace details {
+
+template<class TYPE, class ... TAGS>
+auto creatorFromTags(const di::Context & ctx, std::tuple<TAGS...>)
+{
+    return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
+}
+
+template<class TYPE>
+auto defaultCreator(const di::Context & ctx)
+{
+    return creatorFromTags<TYPE>(ctx, typename TYPE::di());
+}
+
+} // details
 
 } // namespace di

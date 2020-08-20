@@ -21,18 +21,18 @@ public:
         return result != nullptr;
     }
 
-    std::any resolve() const override
+    std::any resolve(const Context& context) const override
     {
         if (result != nullptr)
             return result;
-        result = createObject();
+        result = createObject(context);
         return result;
     }
 
 private:
-    auto createObject() const
+    auto createObject(const Context& context) const
     {
-        auto object = creator();
+        auto object = creator(context);
         if (object == nullptr)
             throw std::logic_error("di: creator produces null pointer object");
         return object;

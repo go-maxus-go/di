@@ -3,6 +3,8 @@
 
 #include <di/context.h>
 
+#include <tuple>
+
 
 namespace {
 
@@ -10,12 +12,17 @@ const auto testArg = "[LevelBackground]";
 
 template<class T> using Ptr = std::shared_ptr<T>;
 
-struct Foo {};
+struct Foo {
+    using di = std::tuple<>;
+};
 using FooPtr = Ptr<Foo>;
 DECLARE_DI_TAG(FooTag, Foo);
 
 struct Bar {
-    Bar(FooPtr foo) : foo(std::move(foo)) {}
+    using di = std::tuple<FooTag>;
+    Bar(FooPtr foo)
+        : foo(std::move(foo))
+    {}
     FooPtr foo;
 };
 using BarPtr = Ptr<Bar>;
@@ -28,9 +35,11 @@ DECLARE_DI_TAG(BazTag, Baz);
 auto createContext()
 {
     auto ctx = di::Context();
-    ctx.registerTag<FooTag>([]{ return std::make_shared<Foo>(); });
-    ctx.registerTag<BarTag>([ctx]{ return std::make_shared<Bar>(ctx.resolve<FooTag>()); });
-    ctx.registerTransientTag<BazTag>([]{ return std::make_shared<Baz>(); });
+    ctx.registerTag<FooTag>([](const auto &) { return std::make_shared<Foo>(); });
+    ctx.registerTag<BarTag>([](const di::Context & ctx) {
+        return std::make_shared<Bar>(ctx.resolve<FooTag>());
+    });
+    ctx.registerTransientTag<BazTag>([](const auto &){ return std::make_shared<Baz>(); });
     return ctx;
 }
 
@@ -97,4 +106,30 @@ TEST_CASE("Transient tag registering and resolving ", testArg)
 
     REQUIRE(baz2 != nullptr);
     REQUIRE(typeid(*baz2) == typeid(Baz));
+}
+
+TEST_CASE("Using default di tags", testArg)
+{
+    auto ctx = di::Context();
+    ctx.registerTag<FooTag, Foo>();
+    ctx.registerTag<BarTag, Bar>();
+
+    auto foo = ctx.resolve<FooTag>();
+    auto bar = ctx.resolve<BarTag>();
+
+    REQUIRE(foo != nullptr);
+    REQUIRE(bar != nullptr);
+}
+
+TEST_CASE("Using custom dependency tags", testArg)
+{
+    auto ctx = di::Context();
+    ctx.registerTag<FooTag, Foo>();
+    ctx.registerTag<BarTag, Bar>(std::tuple<FooTag>());
+
+    auto foo = ctx.resolve<FooTag>();
+    auto bar = ctx.resolve<BarTag>();
+
+    REQUIRE(foo != nullptr);
+    REQUIRE(bar != nullptr);
 }
