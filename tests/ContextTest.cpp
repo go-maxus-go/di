@@ -39,7 +39,7 @@ auto createContext()
     ctx.registerTag<BarTag>([](const di::Context & ctx) {
         return std::make_shared<Bar>(ctx.resolve<FooTag>());
     });
-    ctx.registerTransientTag<BazTag>([](const auto &){ return std::make_shared<Baz>(); });
+    ctx.registerFactoryTag<BazTag>([](const auto &){ return std::make_shared<Baz>(); });
     return ctx;
 }
 
@@ -121,11 +121,65 @@ TEST_CASE("Using default di tags", testArg)
     REQUIRE(bar != nullptr);
 }
 
+TEST_CASE("Using default di tags for a factory tag", testArg)
+{
+    auto ctx = di::Context();
+    ctx.registerFactoryTag<FooTag, Foo>();
+    ctx.registerFactoryTag<BarTag, Bar>();
+
+    auto foo = ctx.resolve<FooTag>();
+    auto bar = ctx.resolve<BarTag>();
+
+    REQUIRE(foo != nullptr);
+    REQUIRE(bar != nullptr);
+
+    REQUIRE(foo != ctx.resolve<FooTag>());
+    REQUIRE(bar != ctx.resolve<BarTag>());
+}
+
 TEST_CASE("Using custom dependency tags", testArg)
 {
     auto ctx = di::Context();
     ctx.registerTag<FooTag, Foo>();
     ctx.registerTag<BarTag, Bar>(std::tuple<FooTag>());
+
+    auto foo = ctx.resolve<FooTag>();
+    auto bar = ctx.resolve<BarTag>();
+
+    REQUIRE(foo != nullptr);
+    REQUIRE(bar != nullptr);
+}
+
+TEST_CASE("Using custom di tags for a factory tag", testArg)
+{
+    auto ctx = di::Context();
+    ctx.registerFactoryTag<FooTag, Foo>();
+    ctx.registerFactoryTag<BarTag, Bar>(std::tuple<FooTag>());
+
+    auto foo = ctx.resolve<FooTag>();
+    auto bar = ctx.resolve<BarTag>();
+
+    REQUIRE(foo != nullptr);
+    REQUIRE(bar != nullptr);
+
+    REQUIRE(foo != ctx.resolve<FooTag>());
+    REQUIRE(bar != ctx.resolve<BarTag>());
+}
+
+TEST_CASE("Using += operator", testArg)
+{
+    auto ctx = di::Context();
+    ctx += []{
+        auto ctx = di::Context();
+        ctx.registerTag<FooTag, Foo>();
+        return ctx;
+    }();
+
+    ctx += []{
+        auto ctx = di::Context();
+        ctx.registerTag<BarTag, Bar>(std::tuple<FooTag>());
+        return ctx;
+    }();
 
     auto foo = ctx.resolve<FooTag>();
     auto bar = ctx.resolve<BarTag>();

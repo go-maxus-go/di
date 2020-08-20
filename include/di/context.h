@@ -43,6 +43,12 @@ public:
         return *this;
     }
 
+    Context & operator += (Context && ctx)
+    {
+        *m_impl += std::move(*ctx.m_impl);
+        return *this;
+    }
+
 public:
     template<class TAG, class TYPE>
     void registerTag()
@@ -67,23 +73,23 @@ public:
     }
 
     template<class TAG>
-    void registerTransientTag(Creator<TAG> creator)
+    void registerFactoryTag(Creator<TAG> creator)
     {
         m_impl->registerTransientTag<TAG>(std::move(creator));
     }
 
     template<class TAG, class TYPE>
-    void registerTransientTag()
+    void registerFactoryTag()
     {
-        registerTransientTag<TAG>([](const auto & ctx) {
+        registerFactoryTag<TAG>([](const auto & ctx) {
             return details::defaultCreator<TYPE>(ctx);
         });
     }
 
     template<class TAG, class TYPE, class ... TAGS>
-    void registerTransientTag(std::tuple<TAGS...> tags)
+    void registerFactoryTag(std::tuple<TAGS...> tags)
     {
-        registerTransientTag<TAG>([&tags](const auto & ctx) {
+        registerFactoryTag<TAG>([&tags](const auto & ctx) {
             return details::creatorFromTags<TYPE>(ctx, tags);
         });
     }
