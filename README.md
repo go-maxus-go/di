@@ -33,7 +33,9 @@ int main()
     auto ctx = di::Context();
 
     // Register tag
-    ctx.registerTag<InterfaceTag>([]{ return std::make_shared<Implementation>(); });
+    ctx.registerTag<InterfaceTag>([](const di::Context &) {
+        return std::make_shared<Implementation>();
+    });
 
     // Resolve tag
     auto impl = ctx.resolve<InterfaceTag>();
