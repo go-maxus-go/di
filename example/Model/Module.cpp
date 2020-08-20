@@ -1,15 +1,15 @@
 #include "Module.h"
 
-#include <di/context.h>
-
 #include "Impl/Engine.h"
 
 
 namespace Model {
 
-void registerModule(di::Context & ctx)
+di::Context moduleContext()
 {
-    ctx.registerTag<EngineTag>([]{ return std::make_shared<Engine>(); });
+    di::Context ctx;
+    ctx.registerTag<EngineTag, Engine>(std::tuple<>());
+    return ctx;
 }
 
 } // namespace Model

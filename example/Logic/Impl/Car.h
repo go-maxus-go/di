@@ -11,6 +11,7 @@ namespace Logic {
 class Car : public ICar
 {
 public:
+    using di = std::tuple<Model::EngineTag, RegularBreakTag, ParkingBreakTag>;
     Car(Model::EnginePtr engine, BreakPtr regularBreak, BreakPtr parkingBreak);
 
 public: // ICar

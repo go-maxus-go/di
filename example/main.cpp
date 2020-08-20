@@ -10,8 +10,8 @@ int main()
 {
     auto ctx = di::Context();
 
-    Model::registerModule(ctx);
-    Logic::registerModule(ctx);
+    ctx += Model::moduleContext();
+    ctx += Logic::moduleContext();
 
     auto car = ctx.resolve<Logic::CarTag>();
 

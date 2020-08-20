@@ -1,7 +1,5 @@
 #include "Module.h"
 
-#include <di/context.h>
-
 #include "Model/Fwd.h"
 
 #include "Impl/Car.h"
@@ -9,22 +7,13 @@
 #include "Impl/ParkingBreak.h"
 
 
-void Logic::registerModule(di::Context & ctx)
+di::Context Logic::moduleContext()
 {
-    ctx.registerTag<CarTag>([&ctx] {
-        return std::make_shared<Car>(
-                    ctx.resolve<Model::EngineTag>(),
-                    ctx.resolve<RegularBreakTag>(),
-                    ctx.resolve<ParkingBreakTag>() );
-    });
+    di::Context ctx;
 
-    ctx.registerTag<RegularBreakTag>([&ctx] {
-        return std::make_shared<RegularBreak>(
-                    ctx.resolve<Model::EngineTag>() );
-    });
+    ctx.registerTag<CarTag, Car>();
+    ctx.registerTag<RegularBreakTag, RegularBreak>();
+    ctx.registerTag<ParkingBreakTag, ParkingBreak>();
 
-    ctx.registerTag<ParkingBreakTag>([&ctx] {
-        return std::make_shared<ParkingBreak>(
-                    ctx.resolve<Model::EngineTag>() );
-    });
+    return ctx;
 }

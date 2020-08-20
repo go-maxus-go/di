@@ -12,6 +12,7 @@ namespace Logic {
 class RegularBreak : public IBreak
 {
 public:
+    using di = std::tuple<Model::EngineTag>;
     RegularBreak(Model::EnginePtr);
 
 public: // IBreak

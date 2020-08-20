@@ -12,6 +12,7 @@ namespace Logic {
 class ParkingBreak : public IBreak
 {
 public:
+    using di = std::tuple<Model::EngineTag>;
     ParkingBreak(Model::EnginePtr);
 
 public: // IBreak

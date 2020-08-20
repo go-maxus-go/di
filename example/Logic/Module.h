@@ -1,10 +1,12 @@
 #pragma once
 
+#include <di/context.h>
+
 #include "Fwd.h"
 
 
 namespace Logic {
 
-void registerModule(di::Context &);
+di::Context moduleContext();
 
 } // namespace Logic
