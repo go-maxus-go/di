@@ -16,6 +16,7 @@ file (GLOB_RECURSE CPP_FILES
 )
 file (GLOB_RECURSE H_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/di/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.hpp
 )
 set (SOURCE_FILES ${CPP_FILES} ${H_FILES})

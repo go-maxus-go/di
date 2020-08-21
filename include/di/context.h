@@ -5,18 +5,39 @@
 
 #include "fwd.h"
 
+#include <type_traits> // To use 'std::integral_constant'.
+
+#define GENERATE_HAS_MEMBER(member)                                               \
+                                                                                  \
+template < class T >                                                              \
+class HasMember_##member                                                          \
+{                                                                                 \
+private:                                                                          \
+    using Yes = char[2];                                                          \
+    using  No = char[1];                                                          \
+                                                                                  \
+    struct Fallback { int member; };                                              \
+    struct Derived : T, Fallback { };                                             \
+                                                                                  \
+    template < class U >                                                          \
+    static No& test ( decltype(U::member)* );                                     \
+    template < typename U >                                                       \
+    static Yes& test ( U* );                                                      \
+                                                                                  \
+public:                                                                           \
+    static constexpr bool RESULT = sizeof(test<Derived>(nullptr)) == sizeof(Yes); \
+};                                                                                \
+                                                                                  \
+template < class T >                                                              \
+struct has_member_##member                                                        \
+: public std::integral_constant<bool, HasMember_##member<T>::RESULT>              \
+{                                                                                 \
+};
+
+GENERATE_HAS_MEMBER(di)  // Creates 'has_member_di'.
+
 
 namespace di {
-
-namespace details {
-
-template<class TYPE, class ... TAGS>
-auto creatorFromTags(const di::Context & ctx, std::tuple<TAGS...>);
-
-template<class TYPE>
-auto defaultCreator(const di::Context & ctx);
-
-} // details
 
 class Context
 {
@@ -54,7 +75,7 @@ public:
     void registerTag()
     {
         registerTag<TAG>([](const auto & ctx) {
-            return details::defaultCreator<TYPE>(ctx);
+            return creatorFromDi<TYPE>(ctx, std::integral_constant<bool, has_member_di<TYPE>::value>());
         });
     }
 
@@ -62,7 +83,7 @@ public:
     void registerTag(std::tuple<TAGS...> tags)
     {
         registerTag<TAG>([&tags](const auto & ctx) {
-            return details::creatorFromTags<TYPE>(ctx, tags);
+            return creatorFromTags<TYPE>(ctx, tags);
         });
     }
 
@@ -82,7 +103,7 @@ public:
     void registerFactoryTag()
     {
         registerFactoryTag<TAG>([](const auto & ctx) {
-            return details::defaultCreator<TYPE>(ctx);
+            return creatorFromDi<TYPE>(ctx, std::integral_constant<bool, has_member_di<TYPE>::value>());
         });
     }
 
@@ -90,7 +111,7 @@ public:
     void registerFactoryTag(std::tuple<TAGS...> tags)
     {
         registerFactoryTag<TAG>([&tags](const auto & ctx) {
-            return details::creatorFromTags<TYPE>(ctx, tags);
+            return creatorFromTags<TYPE>(ctx, tags);
         });
     }
 
@@ -101,23 +122,26 @@ public:
     }
 
 private:
+    template<class TYPE, class ... TAGS>
+    static auto creatorFromTags(const di::Context & ctx, std::tuple<TAGS...>)
+    {
+        return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
+    }
+
+    template<class TYPE>
+    static auto creatorFromDi(const di::Context & ctx, std::true_type)
+    {
+        return creatorFromTags<TYPE>(ctx, typename TYPE::di());
+    }
+
+    template<class TYPE>
+    static auto creatorFromDi(const di::Context &, std::false_type)
+    {
+        return std::make_shared<TYPE>();
+    }
+
+private:
     ContextImplPtr m_impl;
 };
-
-namespace details {
-
-template<class TYPE, class ... TAGS>
-auto creatorFromTags(const di::Context & ctx, std::tuple<TAGS...>)
-{
-    return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
-}
-
-template<class TYPE>
-auto defaultCreator(const di::Context & ctx)
-{
-    return creatorFromTags<TYPE>(ctx, typename TYPE::di());
-}
-
-} // details
 
 } // namespace di
