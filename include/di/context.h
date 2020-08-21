@@ -1,40 +1,10 @@
 #pragma once
 
-#include "Details/Fwd.h"
-#include "Details/ContextImpl.h"
-
 #include "fwd.h"
 
-#include <type_traits> // To use 'std::integral_constant'.
-
-#define GENERATE_HAS_MEMBER(member)                                               \
-                                                                                  \
-template < class T >                                                              \
-class HasMember_##member                                                          \
-{                                                                                 \
-private:                                                                          \
-    using Yes = char[2];                                                          \
-    using  No = char[1];                                                          \
-                                                                                  \
-    struct Fallback { int member; };                                              \
-    struct Derived : T, Fallback { };                                             \
-                                                                                  \
-    template < class U >                                                          \
-    static No& test ( decltype(U::member)* );                                     \
-    template < typename U >                                                       \
-    static Yes& test ( U* );                                                      \
-                                                                                  \
-public:                                                                           \
-    static constexpr bool RESULT = sizeof(test<Derived>(nullptr)) == sizeof(Yes); \
-};                                                                                \
-                                                                                  \
-template < class T >                                                              \
-struct has_member_##member                                                        \
-: public std::integral_constant<bool, HasMember_##member<T>::RESULT>              \
-{                                                                                 \
-};
-
-GENERATE_HAS_MEMBER(di)  // Creates 'has_member_di'.
+#include "Details/Fwd.h"
+#include "Details/ContextImpl.h"
+#include "Details/HasMemberDi.h"
 
 
 namespace di {
@@ -88,7 +58,7 @@ public:
     void registerTag()
     {
         registerTag<TAG>([](const auto & ctx) {
-            constexpr auto hasDi = has_member_di<TYPE>::value;
+            constexpr auto hasDi = Details::has_member_di<TYPE>::value;
             return creatorFromType<TYPE>(ctx, std::integral_constant<bool, hasDi>());
         });
     }
@@ -136,7 +106,7 @@ public:
     void registerFactoryTag()
     {
         registerFactoryTag<TAG>([](const auto & ctx) {
-            constexpr auto hasDi = has_member_di<TYPE>::value;
+            constexpr auto hasDi = Details::has_member_di<TYPE>::value;
             return creatorFromType<TYPE>(ctx, std::integral_constant<bool, hasDi>());
         });
     }

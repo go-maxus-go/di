@@ -1,52 +1,38 @@
 # di
 The simplest **C++17** runtime dependency injection library.
+
 ## Purpose
-The **di** was developed for the sake of practice. The main goal is to keep classes declarations separate from their definitions to reduce compilation time.
+The main goal of **di** is to keep classes declarations separate from their definitions in order to reduce compilation time.
 
-In order to approach benefits use only `<di/fwd.h>` in your header files and use `<di/context.h>` in your source files.
-
-
-## The simplest example
+## Example
 ```cpp
 #include <di/context.h>
 
-// Declare an interface
 struct Interface
 {
     virtual ~Interface() = default;
-    virtual int method() = 0;
 };
 
-// Implement the interface
-class Implementation : public Interface
-{
-public:
-    int method() override { return 42; }
-};
+class Implementation : public Interface {};
 
-// Declare lightweight tag for the interface
+// Bind the interface to a lightweight tag.
 DECLARE_DI_TAG(InterfaceTag, Interface);
 
 int main()
 {
-    // Create context
+    // Create the context
     auto ctx = di::Context();
 
-    // Register tag
-    ctx.registerTag<InterfaceTag>([](const di::Context &) {
-        return std::make_shared<Implementation>();
-    });
+    // Register the tag
+    ctx.registerTag<InterfaceTag, Implementation>();
 
-    // Resolve tag
-    auto impl = ctx.resolve<InterfaceTag>();
-
-    // Profit
-    impl->method();
+    // Resolve the tag
+    auto object = ctx.resolve<InterfaceTag>();
 }
 ```
 
 ## Full project example
-You can find more detailed example at the **example** folder. Also you can build and run it by using:
+You can find more detailed example in the **example** folder. Also you can build and run it by using:
 
 ```
 cd example && cmake . && make && ./example
