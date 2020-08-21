@@ -6,26 +6,27 @@
 #include "BaseTagHolder.h"
 
 
-namespace di::details {
+namespace di::Details {
 
 template<class TAG>
-class FactoryTagHolder : public BaseTagHolder
+class SingletonTagHolder : public BaseTagHolder
 {
 public:
-    FactoryTagHolder(Creator<TAG> creator)
+    SingletonTagHolder(Creator<TAG> creator)
         : creator(std::move(creator))
     {}
 
     bool isResolved() const override
     {
-        return resolved;
+        return result != nullptr;
     }
 
     std::any resolve(const context& context) const override
     {
-        auto object = createObject(context);
-        setResolved();
-        return object;
+        if (result != nullptr)
+            return result;
+        result = createObject(context);
+        return result;
     }
 
 private:
@@ -37,14 +38,9 @@ private:
         return object;
     }
 
-    void setResolved() const
-    {
-        resolved = true;
-    }
-
 private:
     Creator<TAG> creator;
-    mutable bool resolved = false;
+    mutable ObjectPtr<TAG> result;
 };
 
 } // namespace di::details

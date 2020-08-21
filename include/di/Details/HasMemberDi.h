@@ -1,0 +1,4 @@
+#ifndef HASMEMBERDI_H
+#define HASMEMBERDI_H
+
+#endif // HASMEMBERDI_H

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "details/Fwd.h"
-#include "details/ContextImpl.h"
+#include "Details/Fwd.h"
+#include "Details/ContextImpl.h"
 
 #include "fwd.h"
 
@@ -44,11 +44,11 @@ namespace di {
  */
 class context
 {
-    using ContextImpl = details::ContextImpl;
+    using ContextImpl = Details::ContextImpl;
     using ContextImplPtr = std::shared_ptr<ContextImpl>;
 
-    template<class TAG> using Creator = details::Creator<TAG>;
-    template<class TAG> using ObjectPtr = details::ObjectPtr<TAG>;
+    template<class TAG> using Creator = Details::Creator<TAG>;
+    template<class TAG> using ObjectPtr = Details::ObjectPtr<TAG>;
 
 public:
     context()

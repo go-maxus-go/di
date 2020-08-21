@@ -12,7 +12,7 @@ namespace di {
 
 class context;
 
-namespace details {
+namespace Details {
 
 class ContextImpl
 {

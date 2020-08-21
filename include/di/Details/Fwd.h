@@ -8,7 +8,7 @@ namespace di {
 
 class context;
 
-namespace details {
+namespace Details {
 
 template<class TAG> using Type = typename TAG::type;
 template<class TAG> using ObjectPtr = std::shared_ptr<Type<TAG>>;
