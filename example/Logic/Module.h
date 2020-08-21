@@ -7,6 +7,6 @@
 
 namespace Logic {
 
-di::Context moduleContext();
+di::context moduleContext();
 
 } // namespace Logic

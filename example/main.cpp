@@ -8,7 +8,7 @@
 
 int main()
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
 
     ctx += Model::moduleContext();
     ctx += Logic::moduleContext();

@@ -7,9 +7,9 @@
 #include "Impl/ParkingBreak.h"
 
 
-di::Context Logic::moduleContext()
+di::context Logic::moduleContext()
 {
-    di::Context ctx;
+    di::context ctx;
 
     ctx.registerTag<CarTag, Car>();
     ctx.registerTag<RegularBreakTag, RegularBreak>();

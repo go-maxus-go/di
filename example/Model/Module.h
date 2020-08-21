@@ -7,6 +7,6 @@
 
 namespace Model {
 
-di::Context moduleContext();
+di::context moduleContext();
 
 } // namespace Model
