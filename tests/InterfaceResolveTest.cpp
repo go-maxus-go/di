@@ -40,7 +40,7 @@ struct BarImpl : IBar
 
 TEST_CASE("Register and resolve a single tag", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<FooTag, FooImpl>();
 
     auto foo = ctx.resolve<FooTag>();
@@ -50,7 +50,7 @@ TEST_CASE("Register and resolve a single tag", testArg)
 
 TEST_CASE("Register and resolve a dependency", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<FooTag, FooImpl>();
     ctx.registerTag<BarTag, BarImpl>();
 

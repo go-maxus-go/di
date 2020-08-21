@@ -10,6 +10,6 @@ namespace di {
         using type = InterfaceType; \
     }
 
-class Context;
+class context;
 
 } // namespace di

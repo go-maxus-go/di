@@ -23,13 +23,13 @@ DECLARE_DI_TAG(BarTag, Bar);
 
 TEST_CASE("Merge two contexts", testArg)
 {
-    auto ctxFoo = di::Context();
+    auto ctxFoo = di::context();
     ctxFoo.registerTag<FooTag, Foo>();
 
     const auto foo = ctxFoo.resolve<FooTag>();
     REQUIRE(foo != nullptr);
 
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx += std::move(ctxFoo);
 
     try {
@@ -44,10 +44,10 @@ TEST_CASE("Merge two contexts", testArg)
 
 TEST_CASE("Resolve dependenies after the merge", testArg)
 {
-    auto ctxFoo = di::Context();
+    auto ctxFoo = di::context();
     ctxFoo.registerTag<FooTag, Foo>();
 
-    auto ctxBar = di::Context();
+    auto ctxBar = di::context();
     ctxBar.registerTag<BarTag, Bar>();
 
     try {
@@ -63,12 +63,12 @@ TEST_CASE("Resolve dependenies after the merge", testArg)
 
 TEST_CASE("The moved context is empty after the merge", testArg)
 {
-    auto ctxFoo = di::Context();
+    auto ctxFoo = di::context();
     ctxFoo.registerTag<FooTag, Foo>();
 
     REQUIRE(ctxFoo.resolve<FooTag>() != nullptr);
 
-    auto ctxBar = di::Context();
+    auto ctxBar = di::context();
     ctxBar.registerTag<BarTag, Bar>();
     ctxBar += std::move(ctxFoo);
 
@@ -82,10 +82,10 @@ TEST_CASE("The moved context is empty after the merge", testArg)
 
 TEST_CASE("The normal usage", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<BarTag, Bar>();
     ctx += []{
-        auto ctxFoo = di::Context();
+        auto ctxFoo = di::context();
         ctxFoo.registerTag<FooTag, Foo>();
         return ctxFoo;
     }();

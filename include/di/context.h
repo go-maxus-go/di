@@ -1,7 +1,7 @@
 #pragma once
 
-#include "details/fwd.h"
-#include "details/context_imp.h"
+#include "details/Fwd.h"
+#include "details/ContextImpl.h"
 
 #include "fwd.h"
 
@@ -39,7 +39,10 @@ GENERATE_HAS_MEMBER(di)  // Creates 'has_member_di'.
 
 namespace di {
 
-class Context
+/*
+ * The main class for dealing with dependenies.
+ */
+class context
 {
     using ContextImpl = details::ContextImpl;
     using ContextImplPtr = std::shared_ptr<ContextImpl>;
@@ -48,37 +51,53 @@ class Context
     template<class TAG> using ObjectPtr = details::ObjectPtr<TAG>;
 
 public:
-    Context()
+    context()
         : m_impl(std::make_shared<ContextImpl>())
     {}
 
-    Context(const Context & ctx) = delete;
-    Context(Context && ctx)
+    context(const context & ctx) = delete;
+    context(context && ctx)
         : m_impl(std::move(ctx.m_impl))
     {}
 
-    Context & operator = (const Context &) = delete;
-    Context & operator = (Context && ctx)
+    context & operator = (const context &) = delete;
+    context & operator = (context && ctx)
     {
         m_impl = std::move(ctx.m_impl);
         return *this;
     }
 
-    Context & operator += (Context && ctx)
+public:
+    /*
+     * Merge two contexts. The origin context will get all from the moved one.
+     * The moved context overwrites dependencies if the same tag is used.
+     * After the merge the moved context will be empty.
+     */
+    context & operator += (context && ctx)
     {
         *m_impl += std::move(*ctx.m_impl);
         return *this;
     }
 
-public:
+    /*
+     * Register a singleton DI tag.
+     * The resolved value will get dependencies from the TYPE "di" tag list.
+     * If the "di" tag list is not provided the empty constructor will be used.
+     */
     template<class TAG, class TYPE>
     void registerTag()
     {
         registerTag<TAG>([](const auto & ctx) {
-            return creatorFromDi<TYPE>(ctx, std::integral_constant<bool, has_member_di<TYPE>::value>());
+            constexpr auto hasDi = has_member_di<TYPE>::value;
+            return creatorFromType<TYPE>(ctx, std::integral_constant<bool, hasDi>());
         });
     }
 
+    /*
+     * Register a singleton DI tag.
+     * The resolved value will get dependencies from the provided tag list.
+     * The TYPE "di" tag list will be overwritten.
+     */
     template<class TAG, class TYPE, class ... TAGS>
     void registerTag(std::tuple<TAGS...> tags)
     {
@@ -87,26 +106,45 @@ public:
         });
     }
 
+    /*
+     * Register a singleton DI tag.
+     * For creation of the TYPE the provided creator function will be used.
+     */
     template<class TAG>
     void registerTag(Creator<TAG> creator)
     {
         m_impl->registerTag<TAG>(std::move(creator));
     }
 
+    /*
+     * Register a factory DI tag.
+     * The resolved value will get dependencies from the TYPE "di" tag list.
+     * If the "di" tag list is not provided the empty constructor will be used.
+     */
     template<class TAG>
     void registerFactoryTag(Creator<TAG> creator)
     {
-        m_impl->registerTransientTag<TAG>(std::move(creator));
+        m_impl->registerFactoryTag<TAG>(std::move(creator));
     }
 
+    /*
+     * Register a factory DI tag.
+     * The resolved value will get dependencies from the provided tag list.
+     * The TYPE "di" tag list will be overwritten.
+     */
     template<class TAG, class TYPE>
     void registerFactoryTag()
     {
         registerFactoryTag<TAG>([](const auto & ctx) {
-            return creatorFromDi<TYPE>(ctx, std::integral_constant<bool, has_member_di<TYPE>::value>());
+            constexpr auto hasDi = has_member_di<TYPE>::value;
+            return creatorFromType<TYPE>(ctx, std::integral_constant<bool, hasDi>());
         });
     }
 
+    /*
+     * Register a factory DI tag.
+     * For creation of the TYPE the provided creator function will be used.
+     */
     template<class TAG, class TYPE, class ... TAGS>
     void registerFactoryTag(std::tuple<TAGS...> tags)
     {
@@ -115,6 +153,11 @@ public:
         });
     }
 
+    /*
+     * Try to resolve all dependencies and provide the result object.
+     * For a singleton tag the same object will be returned everytime.
+     * For a factory tag a new object will be returned for each function call.
+     */
     template<class TAG>
     ObjectPtr<TAG> resolve() const
     {
@@ -123,19 +166,19 @@ public:
 
 private:
     template<class TYPE, class ... TAGS>
-    static auto creatorFromTags(const di::Context & ctx, std::tuple<TAGS...>)
+    static auto creatorFromTags(const di::context & ctx, std::tuple<TAGS...>)
     {
         return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
     }
 
     template<class TYPE>
-    static auto creatorFromDi(const di::Context & ctx, std::true_type)
+    static auto creatorFromType(const di::context & ctx, std::true_type)
     {
         return creatorFromTags<TYPE>(ctx, typename TYPE::di());
     }
 
     template<class TYPE>
-    static auto creatorFromDi(const di::Context &, std::false_type)
+    static auto creatorFromType(const di::context &, std::false_type)
     {
         return std::make_shared<TYPE>();
     }

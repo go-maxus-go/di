@@ -25,14 +25,14 @@ struct Baz {};
 using BazPtr = Ptr<Baz>;
 DECLARE_DI_TAG(BazTag, Baz);
 
-di::Context createContext()
+di::context createContext()
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
 
     ctx.registerTag<FooTag>([](const auto &) {
         return std::make_shared<Foo>();
     });
-    ctx.registerTag<BarTag>([](const di::Context & ctx) {
+    ctx.registerTag<BarTag>([](const di::context & ctx) {
         return std::make_shared<Bar>(ctx.resolve<FooTag>());
     });
     ctx.registerFactoryTag<BazTag>([](const auto &) {

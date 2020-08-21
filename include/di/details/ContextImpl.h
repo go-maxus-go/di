@@ -3,15 +3,14 @@
 #include <exception>
 #include <unordered_map>
 
-#include "fwd.h"
-#include "base_tag_holder.h"
-#include "singleton_tag_holder.h"
-#include "transient_tag_holder.h"
+#include "Fwd.h"
+#include "FactoryTagHolder.h"
+#include "SingletonTagHolder.h"
 
 
 namespace di {
 
-class Context;
+class context;
 
 namespace details {
 
@@ -27,15 +26,15 @@ public:
     }
 
     template<class TAG>
-    void registerTransientTag(Creator<TAG> creator)
+    void registerFactoryTag(Creator<TAG> creator)
     {
         ensureTagIsNotResolved<TAG>();
-        auto holder = createTransientTagHolder<TAG>(std::move(creator));
+        auto holder = createFactoryTagHolder<TAG>(std::move(creator));
         putTagHolderInStorage<TAG>(std::move(holder));
     }
 
     template<class TAG>
-    ObjectPtr<TAG> resolve(const Context& context) const
+    ObjectPtr<TAG> resolve(const context& context) const
     {
         ensureTagIsRegistered<TAG>();
         return retrieveObject<TAG>(context);
@@ -86,9 +85,9 @@ private:
     }
 
     template<class TAG>
-    auto createTransientTagHolder(Creator<TAG> creator) const
+    auto createFactoryTagHolder(Creator<TAG> creator) const
     {
-        return std::make_unique<TransientTagHolder<TAG>>(std::move(creator));
+        return std::make_unique<FactoryTagHolder<TAG>>(std::move(creator));
     }
 
     template<class TAG>
@@ -107,7 +106,7 @@ private:
     }
 
     template<class TAG>
-    auto retrieveObject(const Context& context) const
+    auto retrieveObject(const context& context) const
     {
         const auto it = m_tag2holder.find(name<TAG>());
         auto objectAny = it->second->resolve(context);

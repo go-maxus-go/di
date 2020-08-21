@@ -35,7 +35,7 @@ DECLARE_DI_TAG(DependentTag, Dependent);
 
 TEST_CASE("Use default constructor if no di is prodived", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
 
     REQUIRE(ctx.resolve<EmptyNoDiTag>() != nullptr);
@@ -44,7 +44,7 @@ TEST_CASE("Use default constructor if no di is prodived", testArg)
 
 TEST_CASE("Use default constructor if no di is prodived for a factory tag", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerFactoryTag<EmptyNoDiTag, EmptyNoDi>();
 
     REQUIRE(ctx.resolve<EmptyNoDiTag>() != nullptr);
@@ -53,7 +53,7 @@ TEST_CASE("Use default constructor if no di is prodived for a factory tag", test
 
 TEST_CASE("Use default constructor if empty di is prodived", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<EmptyWithDiTag, EmptyWithDi>();
 
     REQUIRE(ctx.resolve<EmptyWithDiTag>() != nullptr);
@@ -62,7 +62,7 @@ TEST_CASE("Use default constructor if empty di is prodived", testArg)
 
 TEST_CASE("Use default constructor if empty di is prodived for a factory tag", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerFactoryTag<EmptyWithDiTag, EmptyWithDi>();
 
     REQUIRE(ctx.resolve<EmptyWithDiTag>() != nullptr);
@@ -71,7 +71,7 @@ TEST_CASE("Use default constructor if empty di is prodived for a factory tag", t
 
 TEST_CASE("Use di from the implementation", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
     ctx.registerTag<EmptyWithDiTag, EmptyWithDi>();
     ctx.registerTag<DependentTag, Dependent>();
@@ -85,7 +85,7 @@ TEST_CASE("Use di from the implementation", testArg)
 
 TEST_CASE("Use di from the implementation for a factory tag", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
     ctx.registerTag<EmptyWithDiTag, EmptyWithDi>();
     ctx.registerFactoryTag<DependentTag, Dependent>();
@@ -99,7 +99,7 @@ TEST_CASE("Use di from the implementation for a factory tag", testArg)
 
 TEST_CASE("Overwrite the implementation di tags", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
     ctx.registerTag<EmptyWithDiTag, EmptyWithDi>();
     ctx.registerTag<DependentTag, Dependent>(std::tuple<EmptyNoDiTag>());
@@ -113,7 +113,7 @@ TEST_CASE("Overwrite the implementation di tags", testArg)
 
 TEST_CASE("Overwrite the implementation di tags for a factory tag", testArg)
 {
-    auto ctx = di::Context();
+    auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
     ctx.registerTag<EmptyWithDiTag, EmptyWithDi>();
     ctx.registerFactoryTag<DependentTag, Dependent>(std::tuple<EmptyNoDiTag>());
