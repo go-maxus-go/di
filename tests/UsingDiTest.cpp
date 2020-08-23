@@ -31,6 +31,16 @@ struct Dependent {
 using DependentPtr = Ptr<Dependent>;
 DECLARE_DI_TAG(DependentTag, Dependent);
 
+struct SingleDependent {
+    using di = EmptyNoDiTag;
+    SingleDependent(EmptyNoDiPtr emptyNoDi)
+        : emptyNoDi(std::move(emptyNoDi))
+    {}
+    EmptyNoDiPtr emptyNoDi;
+};
+using SingleDependentPtr = Ptr<SingleDependent>;
+DECLARE_DI_TAG(SingleDependentTag, SingleDependent);
+
 } // anonymous namespace
 
 TEST_CASE("Use default constructor if no di is prodived", testArg)
@@ -123,4 +133,24 @@ TEST_CASE("Overwrite the implementation di tags for a factory tag", testArg)
     REQUIRE(dependent != ctx.resolve<DependentTag>());
     REQUIRE(dependent->emptyNoDi != nullptr);
     REQUIRE(dependent->emptyWithDi == nullptr);
+}
+
+TEST_CASE("Use one tag type di", testArg)
+{
+    auto ctx = di::context();
+    ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
+    ctx.registerTag<SingleDependentTag, SingleDependent>();
+
+    REQUIRE(ctx.resolve<SingleDependentTag>() != nullptr);
+    REQUIRE(ctx.resolve<SingleDependentTag>() == ctx.resolve<SingleDependentTag>());
+}
+
+TEST_CASE("Use one tag type di for a factory tag", testArg)
+{
+    auto ctx = di::context();
+    ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
+    ctx.registerFactoryTag<SingleDependentTag, SingleDependent>();
+
+    REQUIRE(ctx.resolve<SingleDependentTag>() != nullptr);
+    REQUIRE(ctx.resolve<SingleDependentTag>() != ctx.resolve<SingleDependentTag>());
 }

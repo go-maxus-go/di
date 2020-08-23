@@ -141,6 +141,12 @@ private:
         return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
     }
 
+    template<class TYPE, class TAG>
+    static auto creatorFromTags(const di::context & ctx, TAG)
+    {
+        return std::make_shared<TYPE>(ctx.resolve<TAG>());
+    }
+
     template<class TYPE>
     static auto creatorFromType(const di::context & ctx, std::true_type)
     {
