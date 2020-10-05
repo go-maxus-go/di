@@ -112,7 +112,7 @@ TEST_CASE("Overwrite the implementation di tags", testArg)
     auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
     ctx.registerTag<EmptyWithDiTag, EmptyWithDi>();
-    ctx.registerTag<DependentTag, Dependent>(std::tuple<EmptyNoDiTag>());
+    ctx.registerTag<DependentTag, Dependent>((std::tuple<EmptyNoDiTag>*)(nullptr));
 
     const auto dependent = ctx.resolve<DependentTag>();
     REQUIRE(dependent != nullptr);
@@ -126,7 +126,7 @@ TEST_CASE("Overwrite the implementation di tags for a factory tag", testArg)
     auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
     ctx.registerTag<EmptyWithDiTag, EmptyWithDi>();
-    ctx.registerFactoryTag<DependentTag, Dependent>(std::tuple<EmptyNoDiTag>());
+    ctx.registerFactoryTag<DependentTag, Dependent>((std::tuple<EmptyNoDiTag>*)(nullptr));
 
     const auto dependent = ctx.resolve<DependentTag>();
     REQUIRE(dependent != nullptr);

@@ -36,6 +36,16 @@ struct BarImpl : IBar
     FooPtr foo;
 };
 
+struct BazImpl : IBar
+{
+    using di = std::tuple<IFoo>;
+    BazImpl(FooPtr foo) : foo(std::move(foo))
+    {}
+    int id() const override { return foo->id() / 2; }
+
+    FooPtr foo;
+};
+
 } // anonymous namespace
 
 TEST_CASE("Register and resolve a single tag", testArg)
@@ -62,11 +72,10 @@ TEST_CASE("Register and resolve a dependency", testArg)
 TEST_CASE("Register and resolve an interface", testArg)
 {
     auto ctx = di::context();
-    //ctx.registerType<IFoo>([](const auto&){ return std::make_shared<FooImpl>(); });
-    ctx.registerTag<FooTag, FooImpl>();
-    ctx.registerType<IBar, BarImpl>();
+    ctx.registerType<IFoo, FooImpl>();
+    ctx.registerType<IBar, BazImpl>();
 
     auto bar = ctx.resolve<IBar>();
     REQUIRE(bar != nullptr);
-    REQUIRE(bar->id() == 420);
+    REQUIRE(bar->id() == 21);
 }

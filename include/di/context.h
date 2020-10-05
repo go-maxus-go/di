@@ -69,7 +69,7 @@ public:
      * The TYPE "di" tag list will be overwritten.
      */
     template<class TAG, class TYPE, class ... TAGS>
-    void registerTag(std::tuple<TAGS...> tags)
+    void registerTag(std::tuple<TAGS...>* tags)
     {
         registerTag<TAG>([&tags](const auto & ctx) {
             return creatorFromTags<TYPE>(ctx, tags);
@@ -116,7 +116,7 @@ public:
      * For creation of the TYPE the provided creator function will be used.
      */
     template<class TAG, class TYPE, class ... TAGS>
-    void registerFactoryTag(std::tuple<TAGS...> tags)
+    void registerFactoryTag(std::tuple<TAGS...>* tags)
     {
         registerFactoryTag<TAG>([&tags](const auto & ctx) {
             return creatorFromTags<TYPE>(ctx, tags);
@@ -137,7 +137,7 @@ public:
     /*
      */
     template<class TYPE, class IMPL, class ... TAGS>
-    void registerType(std::tuple<TAGS...> tags)
+    void registerType(std::tuple<TAGS...>* tags)
     {
         registerType<TYPE>([&tags](const auto & ctx) {
             return creatorFromTags<IMPL>(ctx, tags);
@@ -163,25 +163,25 @@ public:
 
 private:
     template<class TYPE, class ... TAGS>
-    static auto creatorFromTags(const di::context & ctx, std::tuple<TAGS...>)
+    static constexpr auto creatorFromTags(const di::context & ctx, std::tuple<TAGS...>*)
     {
         return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
     }
 
     template<class TYPE, class TAG>
-    static auto creatorFromTags(const di::context & ctx, TAG)
+    static constexpr auto creatorFromTags(const di::context & ctx, TAG*)
     {
         return std::make_shared<TYPE>(ctx.resolve<TAG>());
     }
 
     template<class TYPE>
-    static auto creatorFromType(const di::context & ctx, std::true_type)
+    static constexpr auto creatorFromType(const di::context & ctx, std::true_type)
     {
-        return creatorFromTags<TYPE>(ctx, typename TYPE::di());
+        return creatorFromTags<TYPE>(ctx, (typename TYPE::di*)(nullptr));
     }
 
     template<class TYPE>
-    static auto creatorFromType(const di::context &, std::false_type)
+    static constexpr auto creatorFromType(const di::context &, std::false_type)
     {
         return std::make_shared<TYPE>();
     }
