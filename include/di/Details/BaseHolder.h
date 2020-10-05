@@ -9,10 +9,10 @@ class context;
 
 namespace Details {
 
-class BaseTagHolder
+class BaseHolder
 {
 public:
-    virtual ~BaseTagHolder() = default;
+    virtual ~BaseHolder() = default;
     virtual bool isResolved() const = 0;
     virtual std::any resolve(const context&) const = 0;
 };

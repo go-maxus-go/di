@@ -3,29 +3,30 @@
 #include <exception>
 
 #include "Fwd.h"
-#include "BaseTagHolder.h"
+#include "BaseHolder.h"
 
 
 namespace di::Details {
 
-template<class TAG>
-class FactoryTagHolder : public BaseTagHolder
+template<class CREATOR>
+class SingletonHolder : public BaseHolder
 {
 public:
-    FactoryTagHolder(Creator<TAG> creator)
+    SingletonHolder(CREATOR creator)
         : creator(std::move(creator))
     {}
 
     bool isResolved() const override
     {
-        return resolved;
+        return result != nullptr;
     }
 
     std::any resolve(const context& context) const override
     {
-        auto object = createObject(context);
-        setResolved();
-        return object;
+        if (result != nullptr)
+            return result;
+        result = createObject(context);
+        return result;
     }
 
 private:
@@ -37,14 +38,9 @@ private:
         return object;
     }
 
-    void setResolved() const
-    {
-        resolved = true;
-    }
-
 private:
-    Creator<TAG> creator;
-    mutable bool resolved = false;
+    CREATOR creator;
+    mutable typename std::invoke_result<CREATOR, context>::type result;
 };
 
 } // namespace di::details

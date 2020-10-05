@@ -17,8 +17,8 @@ class context
     using ContextImpl = Details::ContextImpl;
     using ContextImplPtr = std::shared_ptr<ContextImpl>;
 
-    template<class TAG> using Creator = Details::Creator<TAG>;
-    template<class TAG> using ObjectPtr = Details::ObjectPtr<TAG>;
+    template<class TAG> using CreatorByTag = Details::CreatorByTag<TAG>;
+    template<class TYPE> using CreatorByType = Details::CreatorByType<TYPE>;
 
 public:
     context()
@@ -81,7 +81,7 @@ public:
      * For creation of the TYPE the provided creator function will be used.
      */
     template<class TAG>
-    void registerTag(Creator<TAG> creator)
+    void registerTag(CreatorByTag<TAG> creator)
     {
         m_impl->registerTag<TAG>(std::move(creator));
     }
@@ -92,7 +92,7 @@ public:
      * If the "di" tag list is not provided the empty constructor will be used.
      */
     template<class TAG>
-    void registerFactoryTag(Creator<TAG> creator)
+    void registerFactoryTag(CreatorByTag<TAG> creator)
     {
         m_impl->registerFactoryTag<TAG>(std::move(creator));
     }
@@ -124,12 +124,39 @@ public:
     }
 
     /*
+     */
+    template<class TYPE, class IMPL>
+    void registerType()
+    {
+        registerType<TYPE>([](const auto & ctx) {
+            constexpr auto hasDi = Details::has_member_di<IMPL>::value;
+            return creatorFromType<IMPL>(ctx, std::integral_constant<bool, hasDi>());
+        });
+    }
+
+    /*
+     */
+    template<class TYPE, class IMPL, class ... TAGS>
+    void registerType(std::tuple<TAGS...> tags)
+    {
+        registerType<TYPE>([&tags](const auto & ctx) {
+            return creatorFromTags<IMPL>(ctx, tags);
+        });
+    }
+
+    template<class TYPE>
+    void registerType(CreatorByType<TYPE> creator)
+    {
+        m_impl->registerType(std::move(creator));
+    }
+
+    /*
      * Try to resolve all dependencies and provide the result object.
      * For a singleton tag the same object will be returned everytime.
      * For a factory tag a new object will be returned for each function call.
      */
     template<class TAG>
-    ObjectPtr<TAG> resolve() const
+    auto resolve() const
     {
         return m_impl->resolve<TAG>(*this);
     }

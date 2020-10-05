@@ -58,3 +58,15 @@ TEST_CASE("Register and resolve a dependency", testArg)
     REQUIRE(bar != nullptr);
     REQUIRE(bar->id() == 420);
 }
+
+TEST_CASE("Register and resolve an interface", testArg)
+{
+    auto ctx = di::context();
+    //ctx.registerType<IFoo>([](const auto&){ return std::make_shared<FooImpl>(); });
+    ctx.registerTag<FooTag, FooImpl>();
+    ctx.registerType<IBar, BarImpl>();
+
+    auto bar = ctx.resolve<IBar>();
+    REQUIRE(bar != nullptr);
+    REQUIRE(bar->id() == 420);
+}

@@ -4,8 +4,9 @@
 #include <unordered_map>
 
 #include "Fwd.h"
-#include "FactoryTagHolder.h"
-#include "SingletonTagHolder.h"
+#include "IsBaseOfTemplate.h"
+#include "FactoryHolder.h"
+#include "SingletonHolder.h"
 
 
 namespace di {
@@ -18,15 +19,23 @@ class ContextImpl
 {
 public:
     template<class TAG>
-    void registerTag(Creator<TAG> creator)
+    void registerTag(CreatorByTag<TAG> creator)
     {
         ensureTagIsNotResolved<TAG>();
-        auto holder = createSingletonTagHolder<TAG>(std::move(creator));
+        auto holder = createSingletonHolder(std::move(creator));
         putTagHolderInStorage<TAG>(std::move(holder));
     }
 
+    template<class TYPE>
+    void registerType(CreatorByType<TYPE> creator)
+    {
+        ensureTagIsNotResolved<TYPE>();
+        auto holder = createSingletonHolder(std::move(creator));
+        putTagHolderInStorage<TYPE>(std::move(holder));
+    }
+
     template<class TAG>
-    void registerFactoryTag(Creator<TAG> creator)
+    void registerFactoryTag(CreatorByTag<TAG> creator)
     {
         ensureTagIsNotResolved<TAG>();
         auto holder = createFactoryTagHolder<TAG>(std::move(creator));
@@ -34,7 +43,7 @@ public:
     }
 
     template<class TAG>
-    ObjectPtr<TAG> resolve(const context& context) const
+    auto resolve(const context& context) const
     {
         ensureTagIsRegistered<TAG>();
         return retrieveObject<TAG>(context);
@@ -42,15 +51,15 @@ public:
 
     void clear()
     {
-        m_tag2holder.clear();
+        m_name2holder.clear();
     }
 
     ContextImpl & operator += (ContextImpl && ctx)
     {
-        for (auto it = ctx.m_tag2holder.begin(); it != ctx.m_tag2holder.end(); ++it)
-            m_tag2holder[it->first] = std::move(it->second);
+        for (auto it = ctx.m_name2holder.begin(); it != ctx.m_name2holder.end(); ++it)
+            m_name2holder[it->first] = std::move(it->second);
 
-        ctx.m_tag2holder.clear();
+        ctx.m_name2holder.clear();
 
         return *this;
     }
@@ -66,8 +75,8 @@ private:
     template<class TAG>
     bool isTagResolved() const
     {
-        const auto it = m_tag2holder.find(name<TAG>());
-        if (it == m_tag2holder.end())
+        const auto it = m_name2holder.find(name<TAG>());
+        if (it == m_name2holder.end())
             return false;
         return it->second->isResolved();
     }
@@ -78,45 +87,59 @@ private:
         return typeid(TAG).name();
     }
 
-    template<class TAG>
-    auto createSingletonTagHolder(Creator<TAG> creator) const
+    template<class CREATOR>
+    auto createSingletonHolder(CREATOR creator) const
     {
-        return std::make_unique<SingletonTagHolder<TAG>>(std::move(creator));
+        return std::make_unique<SingletonHolder<CREATOR>>(std::move(creator));
     }
 
     template<class TAG>
-    auto createFactoryTagHolder(Creator<TAG> creator) const
+    auto createFactoryTagHolder(CreatorByTag<TAG> creator) const
     {
-        return std::make_unique<FactoryTagHolder<TAG>>(std::move(creator));
+        return std::make_unique<FactoryHolder<CreatorByTag<TAG>>>(std::move(creator));
     }
 
     template<class TAG>
     void putTagHolderInStorage(BaseHolderPtr holder)
     {
         const auto name = this->name<TAG>();
-        auto it = m_tag2holder.find(name);
-        m_tag2holder.insert(it, std::make_pair(name, std::move(holder)));
+        auto it = m_name2holder.find(name);
+        m_name2holder.insert(it, std::make_pair(name, std::move(holder)));
     }
 
     template<class TAG>
     void ensureTagIsRegistered() const
     {
-        if (m_tag2holder.find(name<TAG>()) == m_tag2holder.end())
+        const auto tagName = name<TAG>();
+        if (m_name2holder.find(tagName) == m_name2holder.end())
             throw std::logic_error("di: trial to resolve not registered tag");
     }
 
     template<class TAG>
     auto retrieveObject(const context& context) const
     {
-        const auto it = m_tag2holder.find(name<TAG>());
+        const auto tagName = name<TAG>();
+        const auto it = m_name2holder.find(tagName);
         auto objectAny = it->second->resolve(context);
-        return std::any_cast<ObjectPtr<TAG>>(std::move(objectAny));
+        return castObject<TAG>(std::move(objectAny), is_base_of_template<Tag, TAG>());
+    }
+
+    template<class TAG>
+    auto castObject(std::any object, std::true_type) const
+    {
+        return std::any_cast<ObjectPtr<TAG>>(std::move(object));
+    }
+
+    template<class TYPE>
+    auto castObject(std::any object, std::false_type) const
+    {
+        return std::any_cast<Pointer<TYPE>>(std::move(object));
     }
 
 private:
     using Name = const char *;
-    using BaseTagHolderPtr = std::unique_ptr<BaseTagHolder>;
-    std::unordered_map<Name, BaseTagHolderPtr> m_tag2holder;
+    using BaseHolderPtr = std::unique_ptr<BaseHolder>;
+    std::unordered_map<Name, BaseHolderPtr> m_name2holder;
 };
 
 } // namespace di
