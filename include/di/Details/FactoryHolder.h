@@ -8,11 +8,11 @@
 
 namespace di::Details {
 
-template<class CREATOR>
+template<class TAG>
 class FactoryHolder : public BaseHolder
 {
 public:
-    FactoryHolder(CREATOR creator)
+    FactoryHolder(Creator<TAG> creator)
         : creator(std::move(creator))
     {}
 
@@ -25,7 +25,7 @@ public:
     {
         auto object = createObject(context);
         setResolved();
-        return object;
+        return object.release();
     }
 
 private:
@@ -43,7 +43,7 @@ private:
     }
 
 private:
-    CREATOR creator;
+    Creator<TAG> creator;
     mutable bool resolved = false;
 };
 

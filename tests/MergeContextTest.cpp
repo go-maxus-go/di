@@ -6,18 +6,16 @@ namespace {
 const auto testArg = "[MergeContextTest]";
 
 struct Foo {};
-using FooPtr = Ptr<Foo>;
-DECLARE_DI_TAG(FooTag, Foo);
+struct FooTag : di::singleton_tag<Foo> {};
 
 struct Bar {
     using di = std::tuple<FooTag>;
-    Bar(FooPtr foo)
+    Bar(std::shared_ptr<Foo> foo)
         : foo(std::move(foo))
     {}
-    FooPtr foo;
+    std::shared_ptr<Foo> foo;
 };
-using BarPtr = Ptr<Bar>;
-DECLARE_DI_TAG(BarTag, Bar);
+struct BarTag : di::singleton_tag<Bar> {};
 
 } // anonymous namespace
 

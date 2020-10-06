@@ -8,11 +8,11 @@
 
 namespace di::Details {
 
-template<class CREATOR>
+template<class TAG>
 class SingletonHolder : public BaseHolder
 {
 public:
-    SingletonHolder(CREATOR creator)
+    SingletonHolder(Creator<TAG> creator)
         : creator(std::move(creator))
     {}
 
@@ -25,22 +25,15 @@ public:
     {
         if (result != nullptr)
             return result;
-        result = createObject(context);
+        result = creator(context);
+        if (result == nullptr)
+            throw std::logic_error("di: creator produces null pointer object");
         return result;
     }
 
 private:
-    auto createObject(const context& context) const
-    {
-        auto object = creator(context);
-        if (object == nullptr)
-            throw std::logic_error("di: creator produces null pointer object");
-        return object;
-    }
-
-private:
-    CREATOR creator;
-    mutable typename std::invoke_result<CREATOR, context>::type result;
+    Creator<TAG> creator;
+    mutable std::shared_ptr<Type<TAG>> result;
 };
 
 } // namespace di::details

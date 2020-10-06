@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "Fwd.h"
+#include "../fwd.h"
 #include "IsBaseOfTemplate.h"
 #include "FactoryHolder.h"
 #include "SingletonHolder.h"
@@ -19,26 +20,11 @@ class ContextImpl
 {
 public:
     template<class TAG>
-    void registerTag(CreatorByTag<TAG> creator)
+    void registerTag(Creator<TAG> creator)
     {
         ensureTagIsNotResolved<TAG>();
-        auto holder = createSingletonHolder(std::move(creator));
-        putTagHolderInStorage<TAG>(std::move(holder));
-    }
-
-    template<class TYPE>
-    void registerType(CreatorByType<TYPE> creator)
-    {
-        ensureTagIsNotResolved<TYPE>();
-        auto holder = createSingletonHolder(std::move(creator));
-        putTagHolderInStorage<TYPE>(std::move(holder));
-    }
-
-    template<class TAG>
-    void registerFactoryTag(CreatorByTag<TAG> creator)
-    {
-        ensureTagIsNotResolved<TAG>();
-        auto holder = createFactoryTagHolder<TAG>(std::move(creator));
+        constexpr auto isSingleton = std::integral_constant<bool, isSingletonTag<TAG>()>();
+        auto holder = createHolder<TAG>(std::move(creator), isSingleton);
         putTagHolderInStorage<TAG>(std::move(holder));
     }
 
@@ -87,16 +73,16 @@ private:
         return typeid(TAG).name();
     }
 
-    template<class CREATOR>
-    auto createSingletonHolder(CREATOR creator) const
+    template<class TAG>
+    auto createHolder(Creator<TAG> creator, std::true_type) const
     {
-        return std::make_unique<SingletonHolder<CREATOR>>(std::move(creator));
+        return std::make_unique<SingletonHolder<TAG>>(std::move(creator));
     }
 
     template<class TAG>
-    auto createFactoryTagHolder(CreatorByTag<TAG> creator) const
+    auto createHolder(Creator<TAG> creator, std::false_type) const
     {
-        return std::make_unique<FactoryHolder<CreatorByTag<TAG>>>(std::move(creator));
+        return std::make_unique<FactoryHolder<TAG>>(std::move(creator));
     }
 
     template<class TAG>
@@ -121,19 +107,29 @@ private:
         const auto tagName = name<TAG>();
         const auto it = m_name2holder.find(tagName);
         auto objectAny = it->second->resolve(context);
-        return castObject<TAG>(std::move(objectAny), is_base_of_template<Tag, TAG>());
+        constexpr auto isSingleton = isSingletonTag<TAG>();
+        return castObject<TAG>(std::move(objectAny), std::integral_constant<bool, isSingleton>());
     }
 
     template<class TAG>
     auto castObject(std::any object, std::true_type) const
     {
-        return std::any_cast<ObjectPtr<TAG>>(std::move(object));
+        return std::any_cast<std::shared_ptr<Type<TAG>>>(std::move(object));
     }
 
-    template<class TYPE>
+    template<class TAG>
     auto castObject(std::any object, std::false_type) const
     {
-        return std::any_cast<Pointer<TYPE>>(std::move(object));
+        return std::unique_ptr<Type<TAG>>(std::any_cast<Type<TAG>*>(object));
+    }
+
+    template<class TAG>
+    static constexpr bool isSingletonTag()
+    {
+        constexpr auto isSingleton = is_base_of_template<singleton_tag, TAG>();
+        constexpr auto isFactory = is_base_of_template<factory_tag, TAG>();
+        static_assert(isSingleton || isFactory, "Tag must be a singleton or a factory tag");
+        return isSingleton;
     }
 
 private:

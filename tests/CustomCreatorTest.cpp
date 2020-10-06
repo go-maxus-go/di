@@ -5,38 +5,43 @@ namespace {
 
 const auto testArg = "[CustomCreatorTest]";
 
-struct Foo {
-    using di = std::tuple<>;
-};
-using FooPtr = Ptr<Foo>;
-DECLARE_DI_TAG(FooTag, Foo);
+struct Foo {};
+struct FooTag : di::singleton_tag<Foo> {};
 
 struct Bar {
-    using di = std::tuple<FooTag>;
-    Bar(FooPtr foo)
+    Bar(std::shared_ptr<Foo> foo)
         : foo(std::move(foo))
     {}
-    FooPtr foo;
+    std::shared_ptr<Foo> foo;
 };
-using BarPtr = Ptr<Bar>;
-DECLARE_DI_TAG(BarTag, Bar);
+struct BarTag : di::singleton_tag<Bar> {};
 
 struct Baz {};
-using BazPtr = Ptr<Baz>;
-DECLARE_DI_TAG(BazTag, Baz);
+struct BazTag : di::factory_tag<Baz> {};
+
+struct Qux {
+    Qux(std::unique_ptr<Baz> baz)
+        : baz(std::move(baz))
+    {}
+    std::shared_ptr<Baz> baz;
+};
+struct QuxTag : di::factory_tag<Qux> {};
 
 di::context createContext()
 {
     auto ctx = di::context();
 
     ctx.registerTag<FooTag>([](const auto &) {
-        return std::make_shared<Foo>();
+        return std::make_unique<Foo>();
     });
     ctx.registerTag<BarTag>([](const di::context & ctx) {
-        return std::make_shared<Bar>(ctx.resolve<FooTag>());
+        return std::make_unique<Bar>(ctx.resolve<FooTag>());
     });
-    ctx.registerFactoryTag<BazTag>([](const auto &) {
-        return std::make_shared<Baz>();
+    ctx.registerTag<BazTag>([](const auto &) {
+        return std::make_unique<Baz>();
+    });
+    ctx.registerTag<QuxTag>([](const di::context & ctx) {
+        return std::make_unique<Qux>(ctx.resolve<BazTag>());
     });
 
     return ctx;
@@ -96,7 +101,7 @@ TEST_CASE("Factory tag registering and resolving ", testArg)
     auto ctx = createContext();
 
     const auto baz1 = ctx.resolve<BazTag>();
-    const auto baz2 = ctx.resolve<BazTag>();
+    const std::unique_ptr<Baz> baz2 = ctx.resolve<BazTag>();
 
     REQUIRE(baz1 != baz2);
 
@@ -105,4 +110,15 @@ TEST_CASE("Factory tag registering and resolving ", testArg)
 
     REQUIRE(baz2 != nullptr);
     REQUIRE(typeid(*baz2) == typeid(Baz));
+}
+
+TEST_CASE("Factory tag registering and resolving a dependent class", testArg)
+{
+    auto ctx = createContext();
+
+    const auto qux = ctx.resolve<QuxTag>();
+
+    REQUIRE(qux != nullptr);
+    REQUIRE(qux->baz != nullptr);
+    REQUIRE(typeid(*qux) == typeid(Qux));
 }

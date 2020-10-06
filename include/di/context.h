@@ -11,18 +11,19 @@ namespace di {
 
 /*
  * The main class for dealing with dependenies.
+ * It's supposed to be filled with all dependencies on application start event.
+ * When it is filled with all dependencies it is ready to use.
  */
 class context
 {
     using ContextImpl = Details::ContextImpl;
-    using ContextImplPtr = std::shared_ptr<ContextImpl>;
+    using ContextImplPtr = std::unique_ptr<ContextImpl>;
 
-    template<class TAG> using CreatorByTag = Details::CreatorByTag<TAG>;
-    template<class TYPE> using CreatorByType = Details::CreatorByType<TYPE>;
+    template<class TAG> using Creator = Details::Creator<TAG>;
 
 public:
     context()
-        : m_impl(std::make_shared<ContextImpl>())
+        : m_impl(std::make_unique<ContextImpl>())
     {}
 
     context(const context & ctx) = delete;
@@ -50,104 +51,31 @@ public:
     }
 
     /*
-     * Register a singleton DI tag.
-     * The resolved value will get dependencies from the TYPE "di" tag list.
-     * If the "di" tag list is not provided the empty constructor will be used.
+     * Register a DI tag.
+     * The resolved value will get dependencies from the provided tags or the TYPE "di".
+     * The "di" tag list will be overwritten by TAGS provided to the function.
      */
-    template<class TAG, class TYPE>
+    template<class TAG, class TYPE, class ... TAGS>
     void registerTag()
     {
-        registerTag<TAG>([](const auto & ctx) {
+        registerTag<TAG>([](const ::di::context & ctx) {
+            constexpr auto tagsCount = std::tuple_size<std::tuple<TAGS...>>::value;
             constexpr auto hasDi = Details::has_member_di<TYPE>::value;
-            return creatorFromType<TYPE>(ctx, std::integral_constant<bool, hasDi>());
+            constexpr auto useDi = tagsCount == 0 && hasDi;
+            constexpr std::tuple<TAGS...> * dependency = nullptr;
+            return creatorFromTags<TYPE>(ctx, dependency, std::integral_constant<bool, useDi>());
         });
     }
 
     /*
-     * Register a singleton DI tag.
-     * The resolved value will get dependencies from the provided tag list.
-     * The TYPE "di" tag list will be overwritten.
-     */
-    template<class TAG, class TYPE, class ... TAGS>
-    void registerTag(std::tuple<TAGS...>* tags)
-    {
-        registerTag<TAG>([&tags](const auto & ctx) {
-            return creatorFromTags<TYPE>(ctx, tags);
-        });
-    }
-
-    /*
-     * Register a singleton DI tag.
-     * For creation of the TYPE the provided creator function will be used.
+     * Register a DI tag with specification of a creator function.
+     * NOTE: all creator functions must return std::unique_ptr<TYPE>
+     * where TYPE is specified in the tag.
      */
     template<class TAG>
-    void registerTag(CreatorByTag<TAG> creator)
+    void registerTag(Creator<TAG> creator)
     {
         m_impl->registerTag<TAG>(std::move(creator));
-    }
-
-    /*
-     * Register a factory DI tag.
-     * The resolved value will get dependencies from the TYPE "di" tag list.
-     * If the "di" tag list is not provided the empty constructor will be used.
-     */
-    template<class TAG>
-    void registerFactoryTag(CreatorByTag<TAG> creator)
-    {
-        m_impl->registerFactoryTag<TAG>(std::move(creator));
-    }
-
-    /*
-     * Register a factory DI tag.
-     * The resolved value will get dependencies from the provided tag list.
-     * The TYPE "di" tag list will be overwritten.
-     */
-    template<class TAG, class TYPE>
-    void registerFactoryTag()
-    {
-        registerFactoryTag<TAG>([](const auto & ctx) {
-            constexpr auto hasDi = Details::has_member_di<TYPE>::value;
-            return creatorFromType<TYPE>(ctx, std::integral_constant<bool, hasDi>());
-        });
-    }
-
-    /*
-     * Register a factory DI tag.
-     * For creation of the TYPE the provided creator function will be used.
-     */
-    template<class TAG, class TYPE, class ... TAGS>
-    void registerFactoryTag(std::tuple<TAGS...>* tags)
-    {
-        registerFactoryTag<TAG>([&tags](const auto & ctx) {
-            return creatorFromTags<TYPE>(ctx, tags);
-        });
-    }
-
-    /*
-     */
-    template<class TYPE, class IMPL>
-    void registerType()
-    {
-        registerType<TYPE>([](const auto & ctx) {
-            constexpr auto hasDi = Details::has_member_di<IMPL>::value;
-            return creatorFromType<IMPL>(ctx, std::integral_constant<bool, hasDi>());
-        });
-    }
-
-    /*
-     */
-    template<class TYPE, class IMPL, class ... TAGS>
-    void registerType(std::tuple<TAGS...>* tags)
-    {
-        registerType<TYPE>([&tags](const auto & ctx) {
-            return creatorFromTags<IMPL>(ctx, tags);
-        });
-    }
-
-    template<class TYPE>
-    void registerType(CreatorByType<TYPE> creator)
-    {
-        m_impl->registerType(std::move(creator));
     }
 
     /*
@@ -163,27 +91,32 @@ public:
 
 private:
     template<class TYPE, class ... TAGS>
-    static constexpr auto creatorFromTags(const di::context & ctx, std::tuple<TAGS...>*)
+    static constexpr auto creatorFromTags(
+            const di::context & ctx,
+            const std::tuple<TAGS...>*,
+            std::true_type)
     {
-        return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
+        constexpr typename TYPE::di * dependency = nullptr;
+        return creatorFromTags<TYPE>(ctx, dependency, std::false_type());
     }
 
     template<class TYPE, class TAG>
-    static constexpr auto creatorFromTags(const di::context & ctx, TAG*)
+    static constexpr auto creatorFromTags(
+            const di::context & ctx,
+            const TAG *,
+            std::false_type)
     {
-        return std::make_shared<TYPE>(ctx.resolve<TAG>());
+        constexpr std::tuple<TAG> * dependency = nullptr;
+        return creatorFromTags<TYPE>(ctx, dependency, std::false_type());
     }
 
-    template<class TYPE>
-    static constexpr auto creatorFromType(const di::context & ctx, std::true_type)
+    template<class TYPE, class ... TAGS>
+    static constexpr auto creatorFromTags(
+            const di::context & ctx,
+            const std::tuple<TAGS...>*,
+            std::false_type)
     {
-        return creatorFromTags<TYPE>(ctx, (typename TYPE::di*)(nullptr));
-    }
-
-    template<class TYPE>
-    static constexpr auto creatorFromType(const di::context &, std::false_type)
-    {
-        return std::make_shared<TYPE>();
+        return std::make_unique<TYPE>((ctx.resolve<TAGS>())...);
     }
 
 private:
