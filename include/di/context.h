@@ -68,6 +68,15 @@ public:
     }
 
     /*
+     * Register a DI tag for a non abstract type.
+     */
+    template<class TAG>
+    void registerTag()
+    {
+        registerTag<TAG, Details::Type<TAG>>();
+    }
+
+    /*
      * Register a DI tag with specification of a creator function.
      * NOTE: all creator functions must return std::unique_ptr<TYPE>
      * where TYPE is specified in the tag.

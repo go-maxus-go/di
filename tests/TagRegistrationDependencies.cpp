@@ -31,7 +31,7 @@ di::context createContext()
 {
     auto ctx = di::context();
 
-    ctx.registerTag<FooTag, Foo>();
+    ctx.registerTag<FooTag>();
     ctx.registerTag<BarTag, Bar, FooTag>();
     ctx.registerTag<BazTag, Baz, FooTag, BarTag>();
 
