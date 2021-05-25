@@ -8,7 +8,7 @@ namespace Model {
 di::context moduleContext()
 {
     di::context ctx;
-    ctx.registerTag<EngineTag, Engine>(std::tuple<>());
+    ctx.registerTag<EngineTag, Engine>();
     return ctx;
 }
 

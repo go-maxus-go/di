@@ -10,6 +10,6 @@ namespace Model {
 struct IEngine;
 using EnginePtr = std::shared_ptr<IEngine>;
 
-DECLARE_DI_TAG(EngineTag, IEngine);
+struct EngineTag : di::singleton_tag<IEngine> {};
 
 } // namespace Model

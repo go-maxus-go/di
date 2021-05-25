@@ -9,12 +9,11 @@ namespace Logic {
 
 struct ICar;
 using CarPtr = std::shared_ptr<ICar>;
+struct CarTag : di::singleton_tag<ICar> {};
 
 struct IBreak;
 using BreakPtr = std::shared_ptr<IBreak>;
-
-DECLARE_DI_TAG(CarTag, ICar);
-DECLARE_DI_TAG(RegularBreakTag, IBreak);
-DECLARE_DI_TAG(ParkingBreakTag, IBreak);
+struct RegularBreakTag : di::singleton_tag<IBreak> {};
+struct ParkingBreakTag : di::singleton_tag<IBreak> {};
 
 } // namespace Logic
