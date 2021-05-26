@@ -3,7 +3,7 @@
 #include "Impl/Engine.h"
 
 
-namespace Gas {
+namespace Engine {
 
 di::context moduleContext()
 {
@@ -12,4 +12,4 @@ di::context moduleContext()
     return ctx;
 }
 
-} // namespace Gas
+} // namespace Engine

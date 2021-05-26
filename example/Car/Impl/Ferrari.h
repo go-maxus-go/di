@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gas/Fwd.h"
+#include "Engine/Fwd.h"
 #include "Brake/Fwd.h"
 
 #include "Car/ICar.h"
@@ -12,17 +12,17 @@ class Ferrari : public ICar
 {
 public:
     using di = std::tuple<
-        Gas::EngineTag,
+        Engine::EngineTag,
         Brake::RegularBrakeTag,
         Brake::ParkingBrakeTag>;
-    Ferrari(Gas::EnginePtr, Brake::BrakePtr, Brake::BrakePtr);
+    Ferrari(Engine::EnginePtr, Brake::BrakePtr, Brake::BrakePtr);
 
 public: // ICar
     void drive() override;
     void stop() override;
 
 private:
-    Gas::EnginePtr m_engine;
+    Engine::EnginePtr m_engine;
     Brake::BrakePtr m_regularBrake;
     Brake::BrakePtr m_parkingBrake;
 };

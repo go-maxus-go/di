@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-namespace Gas {
+namespace Engine {
 
 void Engine::start()
 {
@@ -22,4 +22,4 @@ void Engine::setSpeed(int speed)
     m_speed = speed;
 }
 
-} // namespace Gas
+} // namespace Engine

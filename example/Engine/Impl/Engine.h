@@ -1,11 +1,9 @@
 #pragma once
 
-#include <memory>
-
-#include "Gas/IEngine.h"
+#include "Engine/IEngine.h"
 
 
-namespace Gas {
+namespace Engine {
 
 class Engine : public IEngine
 {
@@ -20,4 +18,4 @@ private:
     int m_speed = 0;
 };
 
-} // namespace Gas
+} // namespace Engine

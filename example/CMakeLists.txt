@@ -17,8 +17,8 @@ file(GLOB CPP_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Impl/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Car/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Car/Impl/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Gas/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Gas/Impl/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Impl/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Brake/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Brake/Impl/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Util/*.cpp
@@ -30,8 +30,8 @@ file(GLOB H_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Impl/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Car/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Car/Impl/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Gas/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Gas/Impl/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Impl/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Brake/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Brake/Impl/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Util/*.h

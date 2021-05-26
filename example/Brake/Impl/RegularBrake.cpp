@@ -2,12 +2,12 @@
 
 #include <iostream>
 
-#include "Gas/IEngine.h"
+#include "Engine/IEngine.h"
 
 
 namespace Brake {
 
-RegularBrake::RegularBrake(Gas::EnginePtr engine)
+RegularBrake::RegularBrake(Engine::EnginePtr engine)
     : m_engine(std::move(engine))
 {}
 

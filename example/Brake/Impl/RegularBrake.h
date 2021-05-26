@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gas/Fwd.h"
+#include "Engine/Fwd.h"
 
 #include "Brake/IBrake.h"
 
@@ -10,14 +10,14 @@ namespace Brake {
 class RegularBrake : public IBrake
 {
 public:
-    using di = Gas::EngineTag;
-    RegularBrake(Gas::EnginePtr);
+    using di = Engine::EngineTag;
+    RegularBrake(Engine::EnginePtr);
 
 public: // IBrake
     void use(bool use) override;
 
 private:
-    Gas::EnginePtr m_engine;
+    Engine::EnginePtr m_engine;
 };
 
 } // namespace Brake

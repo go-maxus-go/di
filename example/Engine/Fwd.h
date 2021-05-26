@@ -5,10 +5,10 @@
 #include <di/fwd.h>
 
 
-namespace Gas {
+namespace Engine {
 
 struct IEngine;
 using EnginePtr = std::shared_ptr<IEngine>;
 struct EngineTag : di::singleton_tag<IEngine> {};
 
-} // namespace Gas
+} // namespace Engine

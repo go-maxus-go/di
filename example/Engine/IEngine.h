@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Gas {
+namespace Engine {
 
 struct IEngine
 {
@@ -13,4 +13,4 @@ struct IEngine
     virtual void setSpeed(int speed) = 0;
 };
 
-} // namespace Gas
+} // namespace Engine

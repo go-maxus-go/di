@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "Car/Fwd.h"
 
 #include "App/IApplication.h"

@@ -1,6 +1,6 @@
 #include "Ferrari.h"
 
-#include "Gas/IEngine.h"
+#include "Engine/IEngine.h"
 
 #include "Brake/IBrake.h"
 
@@ -8,7 +8,10 @@
 namespace Car {
 
 
-Ferrari::Ferrari(Gas::EnginePtr engine, Brake::BrakePtr regularBrake, Brake::BrakePtr parkingBrake)
+Ferrari::Ferrari(
+        Engine::EnginePtr engine,
+        Brake::BrakePtr regularBrake,
+        Brake::BrakePtr parkingBrake)
     : m_engine(std::move(engine))
     , m_regularBrake(std::move(regularBrake))
     , m_parkingBrake(std::move(parkingBrake))
