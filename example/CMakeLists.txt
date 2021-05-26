@@ -11,7 +11,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
 )
 
-file (GLOB CPP_FILES
+file(GLOB CPP_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Model/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Model/Impl/*.cpp
@@ -22,7 +22,7 @@ file (GLOB CPP_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Util/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Util/Impl/*.cpp
 )
-file (GLOB H_FILES
+file(GLOB H_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Model/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Model/Impl/*.h
@@ -33,6 +33,6 @@ file (GLOB H_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Util/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Util/Impl/*.h
 )
-set (SOURCE_FILES ${CPP_FILES} ${H_FILES})
+set(SOURCE_FILES ${CPP_FILES} ${H_FILES})
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
