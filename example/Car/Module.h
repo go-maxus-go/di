@@ -5,8 +5,8 @@
 #include "Fwd.h"
 
 
-namespace Logic {
+namespace Car {
 
 di::context moduleContext();
 
-} // namespace Logic
+} // namespace Car

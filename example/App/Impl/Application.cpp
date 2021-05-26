@@ -1,21 +1,18 @@
 #include "Application.h"
 
-#include "Logic/ICar.h"
-
+#include "Car/ICar.h"
 
 
 namespace App {
 
-Application::Application(Logic::CarPtr car)
+Application::Application(Car::CarPtr car)
     : car(std::move(car))
 {}
 
 int Application::exec()
 {
-    car->useParkingBreak(false);
     car->drive();
-    car->useBreak(true);
-    car->useParkingBreak(true);
+    car->stop();
 
     return 0;
 }

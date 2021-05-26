@@ -2,10 +2,9 @@
 
 #include <memory>
 
-#include "Logic/Fwd.h"
+#include "Car/Fwd.h"
 
 #include "App/IApplication.h"
-
 
 
 namespace App {
@@ -13,14 +12,14 @@ namespace App {
 class Application : public IApplication
 {
 public:
-    using di = Logic::CarTag;
-    Application(Logic::CarPtr car);
+    using di = Car::CarTag;
+    Application(Car::CarPtr car);
 
 public: // IApplication
     int exec() override;
 
 private:
-    Logic::CarPtr car;
+    Car::CarPtr car;
 };
 
 } // namespace Model

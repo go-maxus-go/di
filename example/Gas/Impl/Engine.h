@@ -2,19 +2,22 @@
 
 #include <memory>
 
-#include "Model/IEngine.h"
+#include "Gas/IEngine.h"
 
 
-namespace Model {
+namespace Gas {
 
 class Engine : public IEngine
 {
 public: // IEngine
-    int speed() const override;
+    void start() override;
+    void stop() override;
+
     void setSpeed(int speed) override;
 
 private:
+    bool m_started = false;
     int m_speed = 0;
 };
 
-} // namespace Model
+} // namespace Gas

@@ -5,8 +5,8 @@
 #include "Fwd.h"
 
 
-namespace Model {
+namespace Gas {
 
 di::context moduleContext();
 
-} // namespace Model
+} // namespace Gas

@@ -1,6 +1,6 @@
 #include "Module.h"
 
-#include "Logic/Module.h"
+#include "Car/Module.h"
 
 #include "Impl/Application.h"
 
@@ -11,7 +11,7 @@ di::context moduleContext()
 {
     di::context ctx;
 
-    ctx += Logic::moduleContext();
+    ctx += Car::moduleContext();
 
     ctx.registerTag<ApplicationTag, Application>();
 
