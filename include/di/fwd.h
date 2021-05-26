@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Details/Fwd.h"
-
 
 namespace di {
 

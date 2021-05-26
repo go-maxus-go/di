@@ -1,6 +1,6 @@
 #include "Module.h"
 
-#include "Model/Fwd.h"
+#include "Model/Module.h"
 
 #include "Impl/Car.h"
 #include "Impl/RegularBreak.h"
@@ -10,6 +10,8 @@
 di::context Logic::moduleContext()
 {
     di::context ctx;
+
+    ctx += Model::moduleContext();
 
     ctx.registerTag<CarTag, Car>();
     ctx.registerTag<RegularBreakTag, RegularBreak>();

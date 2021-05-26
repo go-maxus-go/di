@@ -1,22 +1,14 @@
 #include <di/context.h>
 
-#include "Model/Module.h"
-#include "Logic/Module.h"
-
-#include "Logic/ICar.h"
+#include "App/Module.h"
+#include "App/IApplication.h"
 
 
 int main()
 {
-    auto ctx = di::context();
+    auto ctx = App::moduleContext();
 
-    ctx += Model::moduleContext();
-    ctx += Logic::moduleContext();
+    auto app = ctx.resolve<App::ApplicationTag>();
 
-    auto car = ctx.resolve<Logic::CarTag>();
-
-    car->useParkingBreak(false);
-    car->drive();
-    car->useBreak(true);
-    car->useParkingBreak(true);
+    return app->exec();
 }
