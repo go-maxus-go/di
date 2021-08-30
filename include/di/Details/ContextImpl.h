@@ -4,17 +4,12 @@
 #include <unordered_map>
 
 #include "Fwd.h"
-#include "../fwd.h"
 #include "IsBaseOfTemplate.h"
 #include "FactoryHolder.h"
 #include "SingletonHolder.h"
 
 
-namespace di {
-
-class context;
-
-namespace Details {
+namespace di::Details {
 
 class ContextImpl
 {
@@ -29,7 +24,7 @@ public:
     }
 
     template<class TAG>
-    auto resolve(const context& context) const
+    auto resolve(const Context& context) const
     {
         ensureTagIsRegistered<TAG>();
         return retrieveObject<TAG>(context);
@@ -102,7 +97,7 @@ private:
     }
 
     template<class TAG>
-    auto retrieveObject(const context& context) const
+    auto retrieveObject(const Context& context) const
     {
         const auto tagName = name<TAG>();
         const auto it = m_name2holder.find(tagName);
@@ -126,8 +121,8 @@ private:
     template<class TAG>
     static constexpr bool isSingletonTag()
     {
-        constexpr auto isSingleton = is_base_of_template<singleton_tag, TAG>();
-        constexpr auto isFactory = is_base_of_template<factory_tag, TAG>();
+        constexpr auto isSingleton = is_base_of_template<SingletonTag, TAG>();
+        constexpr auto isFactory = is_base_of_template<FactoryTag, TAG>();
         static_assert(isSingleton || isFactory, "Tag must be a singleton or a factory tag");
         return isSingleton;
     }
@@ -138,5 +133,4 @@ private:
     std::unordered_map<Name, BaseHolderPtr> m_name2holder;
 };
 
-} // namespace di
-} // namespace details
+} // namespace di::Details

@@ -37,3 +37,9 @@ You can find more detailed example in the **example** folder. Also you can build
 ```
 cd example && cmake . && make && ./example
 ```
+// TODO:
+Fix improted stuff like di check
+Put context and tag in Details, declare them via using in public
+Figure out whether unique_ptrs work with singleton
+Check test cases
+Extend README

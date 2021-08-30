@@ -21,7 +21,7 @@ public:
         return resolved;
     }
 
-    std::any resolve(const context& context) const override
+    std::any resolve(const Context& context) const override
     {
         auto object = createObject(context);
         setResolved();
@@ -29,7 +29,7 @@ public:
     }
 
 private:
-    auto createObject(const context& context) const
+    auto createObject(const Context& context) const
     {
         auto object = creator(context);
         if (object == nullptr)

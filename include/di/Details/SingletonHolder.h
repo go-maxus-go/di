@@ -21,7 +21,7 @@ public:
         return result != nullptr;
     }
 
-    std::any resolve(const context& context) const override
+    std::any resolve(const Context& context) const override
     {
         if (result != nullptr)
             return result;

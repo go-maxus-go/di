@@ -4,4 +4,4 @@
 
 #include <catch.hpp>
 
-#include <di/context.h>
+#include <di.h>

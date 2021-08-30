@@ -1,50 +1,49 @@
 #pragma once
 
-#include "fwd.h"
-
-#include "Details/Fwd.h"
-#include "Details/ContextImpl.h"
-#include "Details/HasMemberDi.h"
+#include "Fwd.h"
+#include "ContextImpl.h"
+#include "HasMemberDi.h"
 
 
-namespace di {
+namespace di::Details {
 
 /*
  * The main class for dealing with dependenies.
  * It's supposed to be filled with all dependencies on application start event.
  * When it is filled with all dependencies it is ready to use.
  */
-class context
+class Context
 {
-    using ContextImpl = Details::ContextImpl;
     using ContextImplPtr = std::unique_ptr<ContextImpl>;
 
-    template<class TAG> using Creator = Details::Creator<TAG>;
+    template<class TAG> using Creator = Creator<TAG>;
 
 public:
-    context()
+    Context()
         : m_impl(std::make_unique<ContextImpl>())
     {}
 
-    context(const context & ctx) = delete;
-    context(context && ctx)
+    Context(const Context & ctx) = delete;
+    Context(Context && ctx)
         : m_impl(std::move(ctx.m_impl))
     {}
 
-    context & operator = (const context &) = delete;
-    context & operator = (context && ctx)
+    Context & operator = (const Context &) = delete;
+    Context & operator = (Context && ctx)
     {
         m_impl = std::move(ctx.m_impl);
         return *this;
     }
 
+    ~Context() = default;
+
 public:
     /*
-     * Merge two contexts. The origin context will get all from the moved one.
-     * The moved context overwrites dependencies if the same tag is used.
-     * After the merge the moved context will be empty.
+     * Merge two contexts. The origin Context will get all from the moved one.
+     * The moved Context overwrites dependencies if the same tag is used.
+     * After the merge the moved Context will be empty.
      */
-    context & operator += (context && ctx)
+    Context & operator += (Context && ctx)
     {
         *m_impl += std::move(*ctx.m_impl);
         return *this;
@@ -58,9 +57,9 @@ public:
     template<class TAG, class TYPE, class ... TAGS>
     void registerTag()
     {
-        registerTag<TAG>([](const ::di::context & ctx) {
+        registerTag<TAG>([](const Context & ctx) {
             constexpr auto tagsCount = std::tuple_size<std::tuple<TAGS...>>::value;
-            constexpr auto hasDi = Details::has_member_di<TYPE>::value;
+            constexpr auto hasDi = has_member_di<TYPE>::value;
             constexpr auto useDi = tagsCount == 0 && hasDi;
             constexpr std::tuple<TAGS...> * dependency = nullptr;
             return creatorFromTags<TYPE>(ctx, dependency, std::integral_constant<bool, useDi>());
@@ -73,7 +72,7 @@ public:
     template<class TAG>
     void registerTag()
     {
-        registerTag<TAG, Details::Type<TAG>>();
+        registerTag<TAG, Type<TAG>>();
     }
 
     /*
@@ -101,7 +100,7 @@ public:
 private:
     template<class TYPE, class ... TAGS>
     static constexpr auto creatorFromTags(
-            const di::context & ctx,
+            const Context & ctx,
             const std::tuple<TAGS...>*,
             std::true_type)
     {
@@ -111,7 +110,7 @@ private:
 
     template<class TYPE, class TAG>
     static constexpr auto creatorFromTags(
-            const di::context & ctx,
+            const Context & ctx,
             const TAG *,
             std::false_type)
     {
@@ -121,7 +120,7 @@ private:
 
     template<class TYPE, class ... TAGS>
     static constexpr auto creatorFromTags(
-            const di::context & ctx,
+            const Context & ctx,
             const std::tuple<TAGS...>*,
             std::false_type)
     {
@@ -132,4 +131,4 @@ private:
     ContextImplPtr m_impl;
 };
 
-} // namespace di
+} // namespace di::Details
