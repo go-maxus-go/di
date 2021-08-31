@@ -2,7 +2,7 @@
 
 #include "Fwd.h"
 #include "ContextImpl.h"
-#include "HasMemberDi.h"
+#include "HasDiTags.h"
 
 
 namespace di::Details {
@@ -59,7 +59,7 @@ public:
     {
         registerTag<TAG>([](const Context & ctx) {
             constexpr auto tagsCount = std::tuple_size<std::tuple<TAGS...>>::value;
-            constexpr auto hasDi = has_member_di<TYPE>::value;
+            constexpr auto hasDi = HasDiTags<TYPE>::value;
             constexpr auto useDi = tagsCount == 0 && hasDi;
             constexpr std::tuple<TAGS...> * dependency = nullptr;
             return creatorFromTags<TYPE>(ctx, dependency, std::integral_constant<bool, useDi>());
@@ -104,7 +104,7 @@ private:
             const std::tuple<TAGS...>*,
             std::true_type)
     {
-        constexpr typename TYPE::di * dependency = nullptr;
+        constexpr typename TYPE::di_tags * dependency = nullptr;
         return creatorFromTags<TYPE>(ctx, dependency, std::false_type());
     }
 

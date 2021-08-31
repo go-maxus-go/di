@@ -14,7 +14,7 @@ struct EmptyWithDi {
 struct EmptyWithDiTag : di::factory_tag<EmptyWithDi> {};
 
 struct Dependent {
-    using di = std::tuple<EmptyNoDiTag, EmptyWithDiTag>;
+    using di_tags = std::tuple<EmptyNoDiTag, EmptyWithDiTag>;
     Dependent(std::shared_ptr<EmptyNoDi> emptyNoDi, std::unique_ptr<EmptyWithDi> emptyWithDi)
         : emptyNoDi(std::move(emptyNoDi))
         , emptyWithDi(std::move(emptyWithDi))
@@ -30,7 +30,7 @@ struct Dependent {
 struct DependentTag : di::singleton_tag<Dependent> {};
 
 struct SingleDependent {
-    using di = EmptyNoDiTag;
+    using di_tags = EmptyNoDiTag;
     SingleDependent(std::shared_ptr<EmptyNoDi> emptyNoDi)
         : emptyNoDi(std::move(emptyNoDi))
     {}
