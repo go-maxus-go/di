@@ -4,4 +4,5 @@
 
 #include <catch.hpp>
 
-#include <di.h>
+#include <di/tags.h>
+#include <di/context.h>

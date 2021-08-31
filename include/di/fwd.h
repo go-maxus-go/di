@@ -1,10 +1,19 @@
 #pragma once
 
-#include "Details/Tags.h"
-#include "Details/Context.h"
-
 
 namespace di {
+
+namespace Details {
+
+class Context;
+
+template<class T>
+class FactoryTag;
+
+template<class T>
+class SingletonTag;
+
+} // namespace Details
 
 /*
  * The class containing all dependencies.
