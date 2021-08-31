@@ -24,7 +24,7 @@ struct BarTag : di::factory_tag<IBar> {};
 
 struct BarImpl : IBar
 {
-    using di_tags = std::tuple<FooTag>;
+    using di_deps = std::tuple<FooTag>;
     BarImpl(std::shared_ptr<IFoo> foo)
         : foo(std::move(foo))
     {}

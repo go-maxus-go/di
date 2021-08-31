@@ -10,7 +10,7 @@ template<class T>
 class HasDiTags
 {
     template<class U>
-    static std::true_type test(typename U::di_tags*);
+    static std::true_type test(typename U::di_deps*);
 
     template<class U>
     static std::false_type test(U*);

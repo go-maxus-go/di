@@ -104,7 +104,7 @@ private:
             const std::tuple<TAGS...>*,
             std::true_type)
     {
-        constexpr typename TYPE::di_tags * dependency = nullptr;
+        constexpr typename TYPE::di_deps * dependency = nullptr;
         return creatorFromTags<TYPE>(ctx, dependency, std::false_type());
     }
 

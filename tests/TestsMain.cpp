@@ -12,7 +12,10 @@
 // Singleton tag tests.
 
 // Custom creator tests.
-// di_tags single dependency tests.
-// di_tags dependency list as a tuple tests.
+// di_deps single dependency tests.
+// di_deps dependency list as a tuple tests.
 
-// Can I put di_deps into a tag?
+// Can I put di_deps into a tag? Yes, I can.
+
+// Test each case with minimum amount of objects.
+// For simple di_deps use 1 object, for di_deps with tuple use 2 objects

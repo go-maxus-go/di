@@ -3,8 +3,6 @@
 
 namespace {
 
-const auto testArg = "[UsingDiTest]";
-
 struct EmptyNoDi {};
 struct EmptyNoDiTag : di::singleton_tag<EmptyNoDi> {};
 
@@ -14,7 +12,7 @@ struct EmptyWithDi {
 struct EmptyWithDiTag : di::factory_tag<EmptyWithDi> {};
 
 struct Dependent {
-    using di_tags = std::tuple<EmptyNoDiTag, EmptyWithDiTag>;
+    using di_deps = std::tuple<EmptyNoDiTag, EmptyWithDiTag>;
     Dependent(std::shared_ptr<EmptyNoDi> emptyNoDi, std::unique_ptr<EmptyWithDi> emptyWithDi)
         : emptyNoDi(std::move(emptyNoDi))
         , emptyWithDi(std::move(emptyWithDi))
@@ -30,7 +28,7 @@ struct Dependent {
 struct DependentTag : di::singleton_tag<Dependent> {};
 
 struct SingleDependent {
-    using di_tags = EmptyNoDiTag;
+    using di_deps = EmptyNoDiTag;
     SingleDependent(std::shared_ptr<EmptyNoDi> emptyNoDi)
         : emptyNoDi(std::move(emptyNoDi))
     {}
@@ -40,7 +38,7 @@ struct SingleDependentTag : di::singleton_tag<SingleDependent> {};
 
 } // anonymous namespace
 
-TEST_CASE("Use default constructor if no di is prodived", testArg)
+TEST_CASE("Use default constructor if no di is prodived")
 {
     auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
@@ -49,7 +47,7 @@ TEST_CASE("Use default constructor if no di is prodived", testArg)
     REQUIRE(ctx.resolve<EmptyNoDiTag>() == ctx.resolve<EmptyNoDiTag>());
 }
 
-TEST_CASE("Use default constructor if no di is prodived for a factory tag", testArg)
+TEST_CASE("Use default constructor if no di is prodived for a factory tag")
 {
     auto ctx = di::context();
     ctx.registerTag<EmptyWithDiTag, EmptyWithDi>();
@@ -58,7 +56,7 @@ TEST_CASE("Use default constructor if no di is prodived for a factory tag", test
     REQUIRE(ctx.resolve<EmptyWithDiTag>() != ctx.resolve<EmptyWithDiTag>());
 }
 
-TEST_CASE("Use di from the implementation", testArg)
+TEST_CASE("Use di from the implementation")
 {
     auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
@@ -72,7 +70,7 @@ TEST_CASE("Use di from the implementation", testArg)
     REQUIRE(dependent->emptyWithDi != nullptr);
 }
 
-TEST_CASE("Overwrite the implementation di tags", testArg)
+TEST_CASE("Overwrite the implementation di tags")
 {
     auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();
@@ -86,7 +84,7 @@ TEST_CASE("Overwrite the implementation di tags", testArg)
     REQUIRE(dependent->emptyWithDi == nullptr);
 }
 
-TEST_CASE("Use one tag type di", testArg)
+TEST_CASE("Use one tag type di")
 {
     auto ctx = di::context();
     ctx.registerTag<EmptyNoDiTag, EmptyNoDi>();

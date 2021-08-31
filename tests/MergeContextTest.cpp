@@ -7,7 +7,7 @@ struct Foo {};
 struct FooTag : di::singleton_tag<Foo> {};
 
 struct Bar {
-    using di_tags = std::tuple<FooTag>;
+    using di_deps = std::tuple<FooTag>;
     Bar(std::shared_ptr<Foo> foo)
         : foo(std::move(foo))
     {}
