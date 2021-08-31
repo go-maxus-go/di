@@ -1,6 +1,6 @@
 #pragma once
 
-#include <di/context.h>
+#include <di/di.h>
 
 #include "Fwd.h"
 

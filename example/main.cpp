@@ -1,4 +1,4 @@
-#include <di/context.h>
+#include <di/di.h>
 
 #include "App/Module.h"
 #include "App/IApplication.h"

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <di/fwd.h>
+#include <di/di.h>
 
 
 namespace Car {
