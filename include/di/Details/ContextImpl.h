@@ -121,8 +121,8 @@ private:
     template<class TAG>
     static constexpr bool isSingletonTag()
     {
-        constexpr auto isSingleton = IsBaseOfTemplate<SingletonTag, TAG>();
-        constexpr auto isFactory = IsBaseOfTemplate<FactoryTag, TAG>();
+        constexpr auto isSingleton = IsBaseOfTemplate<SingletonTag, TAG>::value;
+        constexpr auto isFactory = IsBaseOfTemplate<FactoryTag, TAG>::value;
         static_assert(isSingleton || isFactory, "Tag must be a singleton or a factory tag");
         return isSingleton;
     }

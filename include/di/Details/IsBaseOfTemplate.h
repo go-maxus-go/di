@@ -7,16 +7,14 @@ namespace di::Details
 {
 
 template<template<typename...> class Base, typename Derived>
-struct IsBaseOfTemplateImpl
+struct IsBaseOfTemplate
 {
     template<typename... Ts>
-    static constexpr std::true_type test(const Base<Ts...> *);
+    static constexpr std::true_type test(Base<Ts...> *);
     static constexpr std::false_type test(...);
 
-    using type = decltype(test(std::declval<Derived*>()));
+public:
+    static constexpr bool value = decltype(test(std::declval<Derived*>()))::value;
 };
-
-template<template<typename...> class Base, typename Derived>
-using IsBaseOfTemplate = typename IsBaseOfTemplateImpl<Base, Derived>::type;
 
 } // namespace di::Details
