@@ -3,8 +3,6 @@
 
 namespace {
 
-const auto testArg = "[CustomCreatorTest]";
-
 struct Foo {};
 struct FooTag : di::singleton_tag<Foo> {};
 
@@ -49,7 +47,7 @@ di::context createContext()
 
 } // anonymous namespace
 
-TEST_CASE("Register tag and resolve it", testArg)
+TEST_CASE("Register tag and resolve it")
 {
     auto ctx = createContext();
 
@@ -59,7 +57,7 @@ TEST_CASE("Register tag and resolve it", testArg)
     REQUIRE(typeid(*foo) == typeid(Foo));
 }
 
-TEST_CASE("Register tag and resolve it several times", testArg)
+TEST_CASE("Register tag and resolve it several times")
 {
     auto ctx = createContext();
 
@@ -69,7 +67,7 @@ TEST_CASE("Register tag and resolve it several times", testArg)
     REQUIRE(foo1 == foo2);
 }
 
-TEST_CASE("Register a couple of tag and resolve it", testArg)
+TEST_CASE("Register a couple of tag and resolve it")
 {
     auto ctx = createContext();
 
@@ -82,7 +80,7 @@ TEST_CASE("Register a couple of tag and resolve it", testArg)
     REQUIRE(typeid(*foo) == typeid(Foo));
 }
 
-TEST_CASE("Context destruction releases objects", testArg)
+TEST_CASE("Context destruction releases objects")
 {
     std::weak_ptr<Foo> weakPtr;
     {
@@ -96,7 +94,7 @@ TEST_CASE("Context destruction releases objects", testArg)
     REQUIRE(weakPtr.lock() == nullptr);
 }
 
-TEST_CASE("Factory tag registering and resolving ", testArg)
+TEST_CASE("Factory tag registering and resolving ")
 {
     auto ctx = createContext();
 
@@ -112,7 +110,7 @@ TEST_CASE("Factory tag registering and resolving ", testArg)
     REQUIRE(typeid(*baz2) == typeid(Baz));
 }
 
-TEST_CASE("Factory tag registering and resolving a dependent class", testArg)
+TEST_CASE("Factory tag registering and resolving a dependent class")
 {
     auto ctx = createContext();
 

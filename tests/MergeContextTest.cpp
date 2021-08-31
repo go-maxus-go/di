@@ -3,8 +3,6 @@
 
 namespace {
 
-const auto testArg = "[MergeContextTest]";
-
 struct Foo {};
 struct FooTag : di::singleton_tag<Foo> {};
 
@@ -19,7 +17,7 @@ struct BarTag : di::singleton_tag<Bar> {};
 
 } // anonymous namespace
 
-TEST_CASE("Merge two contexts", testArg)
+TEST_CASE("Merge two contexts")
 {
     auto ctxFoo = di::context();
     ctxFoo.registerTag<FooTag, Foo>();
@@ -40,7 +38,7 @@ TEST_CASE("Merge two contexts", testArg)
     REQUIRE(foo == ctx.resolve<FooTag>());
 }
 
-TEST_CASE("Resolve dependenies after the merge", testArg)
+TEST_CASE("Resolve dependenies after the merge")
 {
     auto ctxFoo = di::context();
     ctxFoo.registerTag<FooTag, Foo>();
@@ -59,7 +57,7 @@ TEST_CASE("Resolve dependenies after the merge", testArg)
     REQUIRE(ctxBar.resolve<BarTag>() != nullptr);
 }
 
-TEST_CASE("The moved context is empty after the merge", testArg)
+TEST_CASE("The moved context is empty after the merge")
 {
     auto ctxFoo = di::context();
     ctxFoo.registerTag<FooTag, Foo>();
@@ -78,7 +76,7 @@ TEST_CASE("The moved context is empty after the merge", testArg)
     }
 }
 
-TEST_CASE("The normal usage", testArg)
+TEST_CASE("The normal usage")
 {
     auto ctx = di::context();
     ctx.registerTag<BarTag, Bar>();

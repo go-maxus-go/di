@@ -3,8 +3,6 @@
 
 namespace {
 
-const auto testArg = "[InterfaceResolveTest]";
-
 struct IFoo
 {
     virtual ~IFoo() = default;
@@ -38,7 +36,7 @@ struct BarImpl : IBar
 
 } // anonymous namespace
 
-TEST_CASE("Register and resolve a single tag", testArg)
+TEST_CASE("Register and resolve a single tag")
 {
     auto ctx = di::context();
     ctx.registerTag<FooTag, FooImpl>();
@@ -48,7 +46,7 @@ TEST_CASE("Register and resolve a single tag", testArg)
     REQUIRE(foo->id() == 42);
 }
 
-TEST_CASE("Register and resolve a dependency", testArg)
+TEST_CASE("Register and resolve a dependency")
 {
     auto ctx = di::context();
     ctx.registerTag<FooTag, FooImpl>();

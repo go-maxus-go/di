@@ -3,8 +3,6 @@
 
 namespace {
 
-const auto testArg = "[TagRegistrationDependencies]";
-
 struct Foo {};
 struct FooTag : di::singleton_tag<Foo> {};
 
@@ -40,7 +38,7 @@ di::context createContext()
 
 } // anonymous namespace
 
-TEST_CASE("Resolve a singleton tag without dependancies", testArg)
+TEST_CASE("Resolve a singleton tag without dependancies")
 {
     auto ctx = createContext();
 
@@ -50,7 +48,7 @@ TEST_CASE("Resolve a singleton tag without dependancies", testArg)
     REQUIRE(typeid(*foo) == typeid(Foo));
 }
 
-TEST_CASE("Resolve a singleton tag without dependancies several times", testArg)
+TEST_CASE("Resolve a singleton tag without dependancies several times")
 {
     auto ctx = createContext();
 
@@ -60,7 +58,7 @@ TEST_CASE("Resolve a singleton tag without dependancies several times", testArg)
     REQUIRE(foo1 == foo2);
 }
 
-TEST_CASE("Resolve a tag with one dependeny", testArg)
+TEST_CASE("Resolve a tag with one dependeny")
 {
     auto ctx = createContext();
 
@@ -73,7 +71,7 @@ TEST_CASE("Resolve a tag with one dependeny", testArg)
     REQUIRE(typeid(*foo) == typeid(Foo));
 }
 
-TEST_CASE("Resolve a factory tag a couple of time", testArg)
+TEST_CASE("Resolve a factory tag a couple of time")
 {
     auto ctx = createContext();
 
@@ -82,7 +80,7 @@ TEST_CASE("Resolve a factory tag a couple of time", testArg)
     REQUIRE(bar != ctx.resolve<BarTag>());
 }
 
-TEST_CASE("Resolve a tag with several dependeny", testArg)
+TEST_CASE("Resolve a tag with several dependeny")
 {
     auto ctx = createContext();
 
