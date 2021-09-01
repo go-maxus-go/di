@@ -12,6 +12,7 @@ include_directories(
 )
 
 file (GLOB_RECURSE CPP_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/old/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp
 )
 file (GLOB_RECURSE H_FILES

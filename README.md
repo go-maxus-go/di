@@ -41,3 +41,4 @@ cd example && cmake . && make && ./example
 Figure out whether unique_ptrs work with singleton
 Check test cases
 Extend README
+Fix example

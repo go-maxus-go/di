@@ -25,13 +25,16 @@ public:
 
     Context(const Context & ctx) = delete;
     Context(Context && ctx)
-        : m_impl(std::move(ctx.m_impl))
-    {}
+    {
+        *this = std::move(ctx);
+    }
 
     Context & operator = (const Context &) = delete;
     Context & operator = (Context && ctx)
     {
-        m_impl = std::move(ctx.m_impl);
+        auto newCtxImpl = std::make_unique<ContextImpl>();
+        std::swap(m_impl, ctx.m_impl);
+        std::swap(ctx.m_impl, newCtxImpl);
         return *this;
     }
 

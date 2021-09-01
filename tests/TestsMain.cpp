@@ -2,8 +2,8 @@
 #include <catch.hpp>
 
 
-// context behavior tests. context destruction, context moving, context merging,
-// context tag registration after resolve is called.
+// + context behavior tests. context destruction, context moving, context merging,
+// + context tag registration after resolve is called.
 
 // Object tests. object tag registration and dependencies resolving.
 // Interface tests. Interface tag registration and dependencies resolving.
@@ -14,6 +14,7 @@
 // Custom creator tests.
 // di_deps single dependency tests.
 // di_deps dependency list as a tuple tests.
+// di dependency list in context register function
 
 // Can I put di_deps into a tag? Yes, I can.
 

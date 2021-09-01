@@ -85,7 +85,7 @@ private:
     {
         const auto name = this->name<TAG>();
         auto it = m_name2holder.find(name);
-        m_name2holder.insert(it, std::make_pair(name, std::move(holder)));
+        m_name2holder.insert_or_assign(it, name, std::move(holder));
     }
 
     template<class TAG>
