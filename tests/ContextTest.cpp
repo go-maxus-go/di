@@ -9,7 +9,7 @@ struct FooTag : di::singleton_tag<Foo> {};
 struct Bar {
     int id = 0;
 };
-struct BarTag : di::factory_tag<Bar> {};
+struct BarTag : di::singleton_tag<Bar> {};
 
 } // anonymous namespace
 
@@ -64,7 +64,7 @@ TEST_CASE("Merged context overwrites tags")
     ctx1.registerTag<BarTag>();
 
     di::context ctx2;
-    ctx2.registerTag<BarTag>([](auto&&){
+    ctx2.registerTag<BarTag>([](auto&&) {
         auto bar = std::make_unique<Bar>();
         bar->id = 1;
         return bar;
@@ -79,7 +79,7 @@ TEST_CASE("Tags can be overwritten before they are resolved")
 {
     di::context ctx;
     ctx.registerTag<BarTag>();
-    ctx.registerTag<BarTag>([](auto&&){
+    ctx.registerTag<BarTag>([](auto&&) {
         auto bar = std::make_unique<Bar>();
         bar->id = 1;
         return bar;

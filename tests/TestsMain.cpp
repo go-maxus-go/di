@@ -11,7 +11,7 @@
 // Factory tag tests.
 // Singleton tag tests.
 
-// Custom creator tests.
+// + Custom creator tests.
 // di_deps single dependency tests.
 // di_deps dependency list as a tuple tests.
 // di dependency list in context register function

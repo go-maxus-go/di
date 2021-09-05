@@ -1,8 +1,11 @@
 #pragma once
 
+#include <type_traits>
+
 #include "Fwd.h"
-#include "ContextImpl.h"
+#include "Tags.h"
 #include "HasDiTags.h"
+#include "ContextImpl.h"
 
 
 namespace di::Details {
@@ -15,8 +18,6 @@ namespace di::Details {
 class Context
 {
     using ContextImplPtr = std::unique_ptr<ContextImpl>;
-
-    template<class TAG> using Creator = Creator<TAG>;
 
 public:
     Context()
@@ -60,13 +61,17 @@ public:
     template<class TAG, class TYPE, class ... TAGS>
     void registerTag()
     {
-        registerTag<TAG>([](const Context & ctx) {
-            constexpr auto tagsCount = std::tuple_size<std::tuple<TAGS...>>::value;
-            constexpr auto hasDi = HasDiTags<TYPE>::value;
-            constexpr auto useDi = tagsCount == 0 && hasDi;
-            constexpr std::tuple<TAGS...> * dependency = nullptr;
-            return creatorFromTags<TYPE>(ctx, dependency, std::integral_constant<bool, useDi>());
-        });
+        if constexpr (std::is_base_of<BaseTag, TYPE>::value)
+            return registerTag<TAG, Type<TAG>, TYPE, TAGS...>();
+        else
+            registerTag<TAG>([](const Context & ctx) {
+                constexpr auto tagsCount = std::tuple_size<std::tuple<TAGS...>>::value;
+                constexpr auto hasDi = HasDiTags<TYPE>::value;
+                constexpr auto useDi = tagsCount == 0 && hasDi;
+                constexpr std::tuple<TAGS...> * dependency = nullptr;
+                constexpr auto selector = std::integral_constant<bool, useDi>();
+                return creatorFromTags<TYPE>(ctx, dependency, selector);
+            });
     }
 
     /*
