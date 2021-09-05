@@ -1,5 +1,6 @@
 #include "Common.h"
 
+
 namespace {
 
 struct Foo {};
@@ -9,9 +10,13 @@ struct FooTag : di::singleton_tag<Foo> {};
 
 TEST_CASE("Resolve an interface with tags in the context")
 {
-    struct IBar {};
+    struct IBar {
+        virtual ~IBar() = default;
+        virtual void fun() = 0;
+    };
     struct Bar : IBar {
         Bar(std::shared_ptr<Foo>) {}
+        void fun() override {}
     };
     struct BarTag : di::singleton_tag<Bar> {};
 
@@ -19,8 +24,7 @@ TEST_CASE("Resolve an interface with tags in the context")
     ctx.registerTag<FooTag>();
     ctx.registerTag<BarTag, Bar, FooTag>();
 
-    const auto bar = ctx.resolve<BarTag>();
-    REQUIRE(bar != nullptr);
+    REQUIRE(ctx.resolve<BarTag>() != nullptr);
 }
 
 TEST_CASE("Resolve an object with tags in the context")
@@ -34,6 +38,5 @@ TEST_CASE("Resolve an object with tags in the context")
     ctx.registerTag<FooTag>();
     ctx.registerTag<BarTag, FooTag>();
 
-    const auto bar = ctx.resolve<BarTag>();
-    REQUIRE(bar != nullptr);
+    REQUIRE(ctx.resolve<BarTag>() != nullptr);
 }

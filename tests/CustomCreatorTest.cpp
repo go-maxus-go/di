@@ -11,14 +11,18 @@ TEST_CASE("Custom creator resolves an object tag")
         return std::make_unique<Foo>();
     });
 
-    const auto foo = ctx.resolve<FooTag>();
-    REQUIRE(foo != nullptr);
+    REQUIRE(ctx.resolve<FooTag>() != nullptr);
 }
 
 TEST_CASE("Custom creator resolves an interface tag")
 {
-    struct IFoo {};
-    struct Foo : IFoo {};
+    struct IFoo {
+        virtual ~IFoo() = default;
+        virtual void fun() = 0;
+    };
+    struct Foo : IFoo {
+        void fun() override {}
+    };
     struct FooTag : di::singleton_tag<IFoo> {};
 
     di::context ctx;
@@ -28,5 +32,5 @@ TEST_CASE("Custom creator resolves an interface tag")
 
     const auto foo = ctx.resolve<FooTag>();
     REQUIRE(foo != nullptr);
-    REQUIRE(typeid(*foo) == typeid(IFoo));
+    REQUIRE(typeid(foo.get()) == typeid(IFoo*));
 }

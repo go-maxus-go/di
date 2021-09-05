@@ -1,122 +1,67 @@
-//#include "Common.h"
+#include "Common.h"
 
 
-//namespace {
+namespace {
 
-//struct Foo {};
-//struct FooTag : di::singleton_tag<Foo> {};
+struct Foo {};
+struct FooTag : di::singleton_tag<Foo> {};
 
-//struct Bar {
-//    Bar(std::shared_ptr<Foo> foo)
-//        : foo(std::move(foo))
-//    {}
-//    std::shared_ptr<Foo> foo;
-//};
-//struct BarTag : di::singleton_tag<Bar> {};
+struct IQux
+{
+    virtual ~IQux() = default;
+    virtual void fun() = 0;
+};
 
-//struct Baz {};
-//struct BazTag : di::factory_tag<Baz> {};
+} // anonymous namespace
 
-//struct Qux {
-//    Qux(std::unique_ptr<Baz> baz)
-//        : baz(std::move(baz))
-//    {}
-//    std::shared_ptr<Baz> baz;
-//};
-//struct QuxTag : di::factory_tag<Qux> {};
+TEST_CASE("Resolve an interface tag with one tag di_deps as a type")
+{
+    struct Qux : IQux {
+        using di_deps = FooTag;
+        Qux(std::shared_ptr<Foo>) {}
+        void fun() override {}
+    };
+    struct QuxTag : di::singleton_tag<IQux> {};
 
-//di::context createContext()
-//{
-//    auto ctx = di::context();
+    di::context ctx;
+    ctx.registerTag<FooTag>();
+    ctx.registerTag<QuxTag, Qux>();
 
-//    ctx.registerTag<FooTag>([](const auto &) {
-//        return std::make_unique<Foo>();
-//    });
-//    ctx.registerTag<BarTag>([](const di::context & ctx) {
-//        return std::make_unique<Bar>(ctx.resolve<FooTag>());
-//    });
-//    ctx.registerTag<BazTag>([](const auto &) {
-//        return std::make_unique<Baz>();
-//    });
-//    ctx.registerTag<QuxTag>([](const di::context & ctx) {
-//        return std::make_unique<Qux>(ctx.resolve<BazTag>());
-//    });
+    REQUIRE(ctx.resolve<QuxTag>() != nullptr);
+}
 
-//    return ctx;
-//}
+TEST_CASE("Resolve an interface tag with one tag di_deps as a tuple")
+{
+    struct Qux : IQux {
+        using di_deps = std::tuple<FooTag>;
+        Qux(std::shared_ptr<Foo>) {}
+        void fun() override {}
+    };
+    struct QuxTag : di::singleton_tag<IQux> {};
 
-//} // anonymous namespace
+    di::context ctx;
+    ctx.registerTag<FooTag>();
+    ctx.registerTag<QuxTag, Qux>();
 
-//TEST_CASE("Register tag and resolve it")
-//{
-//    auto ctx = createContext();
+    REQUIRE(ctx.resolve<QuxTag>() != nullptr);
+}
 
-//    const auto foo = ctx.resolve<FooTag>();
+TEST_CASE("Resolve an interface tag with several tag di_deps")
+{
+    struct Bar {};
+    struct BarTag : di::singleton_tag<Bar> {};
 
-//    REQUIRE(foo != nullptr);
-//    REQUIRE(typeid(*foo) == typeid(Foo));
-//}
+    struct Qux : IQux {
+        using di_deps = std::tuple<FooTag, BarTag>;
+        Qux(std::shared_ptr<Foo>, std::shared_ptr<Bar>) {}
+        void fun() override {}
+    };
+    struct QuxTag : di::singleton_tag<IQux> {};
 
-//TEST_CASE("Register tag and resolve it several times")
-//{
-//    auto ctx = createContext();
+    di::context ctx;
+    ctx.registerTag<FooTag>();
+    ctx.registerTag<BarTag>();
+    ctx.registerTag<QuxTag, Qux>();
 
-//    const auto foo1 = ctx.resolve<FooTag>();
-//    const auto foo2 = ctx.resolve<FooTag>();
-
-//    REQUIRE(foo1 == foo2);
-//}
-
-//TEST_CASE("Register a couple of tag and resolve it")
-//{
-//    auto ctx = createContext();
-
-//    const auto bar = ctx.resolve<BarTag>();
-//    REQUIRE(bar != nullptr);
-//    REQUIRE(typeid(*bar) == typeid(Bar));
-
-//    const auto foo = bar->foo;
-//    REQUIRE(foo != nullptr);
-//    REQUIRE(typeid(*foo) == typeid(Foo));
-//}
-
-//TEST_CASE("Context destruction releases objects")
-//{
-//    std::weak_ptr<Foo> weakPtr;
-//    {
-//        auto ctx = createContext();
-
-//        const auto foo = ctx.resolve<FooTag>();
-//        weakPtr = std::weak_ptr<Foo>(foo);
-
-//        REQUIRE(weakPtr.lock() != nullptr);
-//    }
-//    REQUIRE(weakPtr.lock() == nullptr);
-//}
-
-//TEST_CASE("Factory tag registering and resolving ")
-//{
-//    auto ctx = createContext();
-
-//    const auto baz1 = ctx.resolve<BazTag>();
-//    const std::unique_ptr<Baz> baz2 = ctx.resolve<BazTag>();
-
-//    REQUIRE(baz1 != baz2);
-
-//    REQUIRE(baz1 != nullptr);
-//    REQUIRE(typeid(*baz1) == typeid(Baz));
-
-//    REQUIRE(baz2 != nullptr);
-//    REQUIRE(typeid(*baz2) == typeid(Baz));
-//}
-
-//TEST_CASE("Factory tag registering and resolving a dependent class")
-//{
-//    auto ctx = createContext();
-
-//    const auto qux = ctx.resolve<QuxTag>();
-
-//    REQUIRE(qux != nullptr);
-//    REQUIRE(qux->baz != nullptr);
-//    REQUIRE(typeid(*qux) == typeid(Qux));
-//}
+    REQUIRE(ctx.resolve<QuxTag>() != nullptr);
+}

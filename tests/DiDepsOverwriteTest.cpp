@@ -1,122 +1,57 @@
 #include "Common.h"
 
 
-//namespace {
+namespace {
 
-//struct Foo {};
-//struct FooTag : di::singleton_tag<Foo> {};
+struct IFoo
+{
+    virtual ~IFoo() = default;
+    virtual int fun() const = 0;
+};
+struct Foo1 : IFoo
+{
+    int fun() const override { return 1; }
+};
+struct Foo1Tag : di::singleton_tag<IFoo> {};
 
-//struct Bar {
-//    Bar(std::shared_ptr<Foo> foo)
-//        : foo(std::move(foo))
-//    {}
-//    std::shared_ptr<Foo> foo;
-//};
-//struct BarTag : di::singleton_tag<Bar> {};
+struct Foo2 : IFoo
+{
+    int fun() const override { return 2; }
+};
+struct Foo2Tag : di::singleton_tag<IFoo> {};
 
-//struct Baz {};
-//struct BazTag : di::factory_tag<Baz> {};
+struct Bar
+{
+    using di_deps = Foo1Tag;
+    Bar(std::shared_ptr<IFoo> foo) : foo(std::move(foo))
+    {}
+    std::shared_ptr<IFoo> foo;
+};
+struct BarTag : di::singleton_tag<Bar> {};
 
-//struct Qux {
-//    Qux(std::unique_ptr<Baz> baz)
-//        : baz(std::move(baz))
-//    {}
-//    std::shared_ptr<Baz> baz;
-//};
-//struct QuxTag : di::factory_tag<Qux> {};
+} // anonymous namespace
 
-//di::context createContext()
-//{
-//    auto ctx = di::context();
+TEST_CASE("Custom creator overwrites di_deps from the object")
+{
+    di::context ctx;
+    ctx.registerTag<Foo1Tag, Foo1>();
+    ctx.registerTag<Foo2Tag, Foo2>();
+    ctx.registerTag<BarTag>([](const di::context& ctx) {
+        auto foo = ctx.resolve<Foo2Tag>();
+        return std::make_unique<Bar>(std::move(foo));
+    });
 
-//    ctx.registerTag<FooTag>([](const auto &) {
-//        return std::make_unique<Foo>();
-//    });
-//    ctx.registerTag<BarTag>([](const di::context & ctx) {
-//        return std::make_unique<Bar>(ctx.resolve<FooTag>());
-//    });
-//    ctx.registerTag<BazTag>([](const auto &) {
-//        return std::make_unique<Baz>();
-//    });
-//    ctx.registerTag<QuxTag>([](const di::context & ctx) {
-//        return std::make_unique<Qux>(ctx.resolve<BazTag>());
-//    });
+    const auto bar = ctx.resolve<BarTag>();
+    REQUIRE(bar->foo->fun() == 2);
+}
 
-//    return ctx;
-//}
+TEST_CASE("Dependencies passed to the context overwrite di_deps from the object")
+{
+    di::context ctx;
+    ctx.registerTag<Foo1Tag, Foo1>();
+    ctx.registerTag<Foo2Tag, Foo2>();
+    ctx.registerTag<BarTag, Foo2Tag>();
 
-//} // anonymous namespace
-
-//TEST_CASE("Register tag and resolve it")
-//{
-//    auto ctx = createContext();
-
-//    const auto foo = ctx.resolve<FooTag>();
-
-//    REQUIRE(foo != nullptr);
-//    REQUIRE(typeid(*foo) == typeid(Foo));
-//}
-
-//TEST_CASE("Register tag and resolve it several times")
-//{
-//    auto ctx = createContext();
-
-//    const auto foo1 = ctx.resolve<FooTag>();
-//    const auto foo2 = ctx.resolve<FooTag>();
-
-//    REQUIRE(foo1 == foo2);
-//}
-
-//TEST_CASE("Register a couple of tag and resolve it")
-//{
-//    auto ctx = createContext();
-
-//    const auto bar = ctx.resolve<BarTag>();
-//    REQUIRE(bar != nullptr);
-//    REQUIRE(typeid(*bar) == typeid(Bar));
-
-//    const auto foo = bar->foo;
-//    REQUIRE(foo != nullptr);
-//    REQUIRE(typeid(*foo) == typeid(Foo));
-//}
-
-//TEST_CASE("Context destruction releases objects")
-//{
-//    std::weak_ptr<Foo> weakPtr;
-//    {
-//        auto ctx = createContext();
-
-//        const auto foo = ctx.resolve<FooTag>();
-//        weakPtr = std::weak_ptr<Foo>(foo);
-
-//        REQUIRE(weakPtr.lock() != nullptr);
-//    }
-//    REQUIRE(weakPtr.lock() == nullptr);
-//}
-
-//TEST_CASE("Factory tag registering and resolving ")
-//{
-//    auto ctx = createContext();
-
-//    const auto baz1 = ctx.resolve<BazTag>();
-//    const std::unique_ptr<Baz> baz2 = ctx.resolve<BazTag>();
-
-//    REQUIRE(baz1 != baz2);
-
-//    REQUIRE(baz1 != nullptr);
-//    REQUIRE(typeid(*baz1) == typeid(Baz));
-
-//    REQUIRE(baz2 != nullptr);
-//    REQUIRE(typeid(*baz2) == typeid(Baz));
-//}
-
-//TEST_CASE("Factory tag registering and resolving a dependent class")
-//{
-//    auto ctx = createContext();
-
-//    const auto qux = ctx.resolve<QuxTag>();
-
-//    REQUIRE(qux != nullptr);
-//    REQUIRE(qux->baz != nullptr);
-//    REQUIRE(typeid(*qux) == typeid(Qux));
-//}
+    const auto bar = ctx.resolve<BarTag>();
+    REQUIRE(bar->foo->fun() == 2);
+}
