@@ -1,11 +1,37 @@
 #include "Common.h"
 
 
+namespace {
+
+struct Foo {};
+struct FooTag : di::singleton_tag<Foo> {};
+
+} // anonymous namespace
+
+TEST_CASE("An exception is thrown if singleton custom creator returns null")
+{
+    di::context ctx;
+    ctx.registerTag<FooTag>([](const di::context&) {
+        return nullptr;
+    });
+
+    REQUIRE_THROWS(ctx.resolve<FooTag>());
+}
+
+TEST_CASE("An exception is thrown if factory custom creator returns null")
+{
+    struct FooTag : di::factory_tag<Foo> {};
+
+    di::context ctx;
+    ctx.registerTag<FooTag>([](const di::context&) {
+        return nullptr;
+    });
+
+    REQUIRE_THROWS(ctx.resolve<FooTag>());
+}
+
 TEST_CASE("Custom creator resolves an object tag")
 {
-    struct Foo {};
-    struct FooTag : di::singleton_tag<Foo> {};
-
     di::context ctx;
     ctx.registerTag<FooTag>([](const di::context&) {
         return std::make_unique<Foo>();
