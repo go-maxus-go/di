@@ -58,29 +58,13 @@ public:
      * The resolved value will get dependencies from the provided tags or the TYPE "di".
      * The "di" tag list will be overwritten by TAGS provided to the function.
      */
-    // TODO: change TAGS to DEPS
-    template<class TAG, class TYPE, class ... TAGS>
+    template<class TAG, class TYPE, class ...DEPS>
     void put()
     {
-        // TODO: clean up conditions
-        if constexpr (!std::is_base_of<BaseTag, TYPE>::value) {
-            if constexpr (std::tuple_size<std::tuple<TAGS...>>::value == 0) {
-                if constexpr (HasDiTags<TYPE>::value) {
-                    auto creator = defaultCreator<TAG, TYPE>((typename TYPE::di_deps*)nullptr);
-                    put<TAG>(std::move(creator));
-                }
-                else {
-                    auto creator = defaultCreator<TAG, TYPE>((std::tuple<>*)nullptr);
-                    put<TAG>(std::move(creator));
-                }
-            }
-            else {
-                auto creator = defaultCreator<TAG, TYPE>((std::tuple<TAGS...>*)nullptr);
-                put<TAG>(std::move(creator));
-            }
-        }
+        if constexpr (!std::is_base_of<BaseTag, TYPE>::value)
+            put<TAG>(defaultCreator<TAG, TYPE, DEPS...>());
         else
-            put<TAG, Type<TAG>, TYPE, TAGS...>();
+            put<TAG, Type<TAG>, TYPE, DEPS...>();
     }
 
     /*
@@ -115,6 +99,19 @@ public:
     }
 
 private:
+    template<class TAG, class TYPE, class ...DEPS>
+    static constexpr Creator<TAG> defaultCreator()
+    {
+        if constexpr (sizeof...(DEPS) == 0) {
+            if constexpr (HasDiTags<TYPE>::value)
+                return defaultCreator<TAG, TYPE>((typename TYPE::di_deps*)nullptr);
+            else
+                return defaultCreator<TAG, TYPE>((std::tuple<>*)nullptr);
+        }
+        else
+            return defaultCreator<TAG, TYPE>((std::tuple<DEPS...>*)nullptr);
+    }
+
     template<class TAG, class TYPE, class DEP>
     static constexpr Creator<TAG> defaultCreator(DEP *)
     {
