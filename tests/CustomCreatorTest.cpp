@@ -11,7 +11,7 @@ struct FooTag : di::singleton_tag<Foo> {};
 TEST_CASE("An exception is thrown if singleton custom creator returns null")
 {
     di::context ctx;
-    ctx.registerTag<FooTag>([](const di::context&) {
+    ctx.put<FooTag>([](const di::context&) {
         return nullptr;
     });
 
@@ -23,7 +23,7 @@ TEST_CASE("An exception is thrown if factory custom creator returns null")
     struct FooTag : di::factory_tag<Foo> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag>([](const di::context&) {
+    ctx.put<FooTag>([](const di::context&) {
         return nullptr;
     });
 
@@ -33,7 +33,7 @@ TEST_CASE("An exception is thrown if factory custom creator returns null")
 TEST_CASE("Custom creator resolves an object tag")
 {
     di::context ctx;
-    ctx.registerTag<FooTag>([](const di::context&) {
+    ctx.put<FooTag>([](const di::context&) {
         return std::make_unique<Foo>();
     });
 
@@ -52,7 +52,7 @@ TEST_CASE("Custom creator resolves an interface tag")
     struct FooTag : di::singleton_tag<IFoo> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag>([](const di::context&) {
+    ctx.put<FooTag>([](const di::context&) {
         return std::make_unique<Foo>();
     });
 

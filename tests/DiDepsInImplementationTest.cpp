@@ -24,8 +24,8 @@ TEST_CASE("Resolve an interface tag with one tag di_deps as a type")
     struct QuxTag : di::singleton_tag<IQux> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag>();
-    ctx.registerTag<QuxTag, Qux>();
+    ctx.put<FooTag>();
+    ctx.put<QuxTag, Qux>();
 
     REQUIRE(ctx.resolve<QuxTag>() != nullptr);
 }
@@ -40,8 +40,8 @@ TEST_CASE("Resolve an interface tag with one tag di_deps as a tuple")
     struct QuxTag : di::singleton_tag<IQux> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag>();
-    ctx.registerTag<QuxTag, Qux>();
+    ctx.put<FooTag>();
+    ctx.put<QuxTag, Qux>();
 
     REQUIRE(ctx.resolve<QuxTag>() != nullptr);
 }
@@ -59,9 +59,9 @@ TEST_CASE("Resolve an interface tag with several tag di_deps")
     struct QuxTag : di::singleton_tag<IQux> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag>();
-    ctx.registerTag<BarTag>();
-    ctx.registerTag<QuxTag, Qux>();
+    ctx.put<FooTag>();
+    ctx.put<BarTag>();
+    ctx.put<QuxTag, Qux>();
 
     REQUIRE(ctx.resolve<QuxTag>() != nullptr);
 }

@@ -13,7 +13,7 @@ di::context Car::moduleContext()
     ctx += Engine::moduleContext();
     ctx += Brake::moduleContext();
 
-    ctx.registerTag<CarTag, Ferrari>();
+    ctx.put<CarTag, Ferrari>();
 
     return ctx;
 }

@@ -14,8 +14,8 @@ TEST_CASE("Resolving a factory tag with objects")
     struct BarTag : di::factory_tag<Bar> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag, Foo>();
-    ctx.registerTag<BarTag, Bar>();
+    ctx.put<FooTag, Foo>();
+    ctx.put<BarTag, Bar>();
 
     const auto bar1 = ctx.resolve<BarTag>();
     const auto bar2 = ctx.resolve<BarTag>();
@@ -48,8 +48,8 @@ TEST_CASE("Resolving a factory tag with interfaces")
     struct BarTag : di::factory_tag<IBar> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag, Foo>();
-    ctx.registerTag<BarTag, Bar>();
+    ctx.put<FooTag, Foo>();
+    ctx.put<BarTag, Bar>();
 
     const auto bar1 = ctx.resolve<BarTag>();
     const auto bar2 = ctx.resolve<BarTag>();

@@ -8,7 +8,7 @@ namespace Util {
 di::context moduleContext()
 {
     di::context ctx;
-    ctx.registerTag<LoggerTag, Logger>();
+    ctx.put<LoggerTag, Logger>();
     return ctx;
 }
 

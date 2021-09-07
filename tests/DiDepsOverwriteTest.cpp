@@ -34,9 +34,9 @@ struct BarTag : di::singleton_tag<Bar> {};
 TEST_CASE("Custom creator overwrites di_deps from the object")
 {
     di::context ctx;
-    ctx.registerTag<Foo1Tag, Foo1>();
-    ctx.registerTag<Foo2Tag, Foo2>();
-    ctx.registerTag<BarTag>([](const di::context& ctx) {
+    ctx.put<Foo1Tag, Foo1>();
+    ctx.put<Foo2Tag, Foo2>();
+    ctx.put<BarTag>([](const di::context& ctx) {
         auto foo = ctx.resolve<Foo2Tag>();
         return std::make_unique<Bar>(std::move(foo));
     });
@@ -48,9 +48,9 @@ TEST_CASE("Custom creator overwrites di_deps from the object")
 TEST_CASE("Dependencies passed to the context overwrite di_deps from the object")
 {
     di::context ctx;
-    ctx.registerTag<Foo1Tag, Foo1>();
-    ctx.registerTag<Foo2Tag, Foo2>();
-    ctx.registerTag<BarTag, Foo2Tag>();
+    ctx.put<Foo1Tag, Foo1>();
+    ctx.put<Foo2Tag, Foo2>();
+    ctx.put<BarTag, Foo2Tag>();
 
     const auto bar = ctx.resolve<BarTag>();
     REQUIRE(bar->foo->fun() == 2);

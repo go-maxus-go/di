@@ -13,7 +13,7 @@ di::context moduleContext()
 
     ctx += Car::moduleContext();
 
-    ctx.registerTag<ApplicationTag, Application>();
+    ctx.put<ApplicationTag, Application>();
 
     return ctx;
 }

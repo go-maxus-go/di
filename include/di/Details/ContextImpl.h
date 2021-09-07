@@ -15,7 +15,7 @@ class ContextImpl
 {
 public:
     template<class TAG>
-    void registerTag(Creator<TAG> creator)
+    void put(Creator<TAG> creator)
     {
         ensureTagIsNotResolved<TAG>();
         constexpr auto isSingleton = std::integral_constant<bool, isSingletonTag<TAG>()>();

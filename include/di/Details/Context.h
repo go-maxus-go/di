@@ -59,12 +59,12 @@ public:
      * The "di" tag list will be overwritten by TAGS provided to the function.
      */
     template<class TAG, class TYPE, class ... TAGS>
-    void registerTag()
+    void put()
     {
         if constexpr (std::is_base_of<BaseTag, TYPE>::value)
-            return registerTag<TAG, Type<TAG>, TYPE, TAGS...>();
+            return put<TAG, Type<TAG>, TYPE, TAGS...>();
         else
-            registerTag<TAG>([](const Context & ctx) {
+            put<TAG>([](const Context & ctx) {
                 constexpr auto tagsCount = std::tuple_size<std::tuple<TAGS...>>::value;
                 constexpr auto hasDi = HasDiTags<TYPE>::value;
                 constexpr auto useDi = tagsCount == 0 && hasDi;
@@ -78,9 +78,9 @@ public:
      * Register a DI tag for a non abstract type.
      */
     template<class TAG>
-    void registerTag()
+    void put()
     {
-        registerTag<TAG, Type<TAG>>();
+        put<TAG, Type<TAG>>();
     }
 
     /*
@@ -89,9 +89,9 @@ public:
      * where TYPE is specified in the tag.
      */
     template<class TAG>
-    void registerTag(Creator<TAG> creator)
+    void put(Creator<TAG> creator)
     {
-        m_impl->registerTag<TAG>(std::move(creator));
+        m_impl->put<TAG>(std::move(creator));
     }
 
     /*

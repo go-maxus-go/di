@@ -24,7 +24,7 @@ int main()
     auto ctx = di::Context();
 
     // Register the tag
-    ctx.registerTag<InterfaceTag, Implementation>();
+    ctx.put<InterfaceTag, Implementation>();
 
     // Resolve the tag
     auto object = ctx.resolve<InterfaceTag>();

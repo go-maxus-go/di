@@ -8,7 +8,7 @@ namespace Engine {
 di::context moduleContext()
 {
     di::context ctx;
-    ctx.registerTag<EngineTag, Engine>();
+    ctx.put<EngineTag, Engine>();
     return ctx;
 }
 

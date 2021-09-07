@@ -21,8 +21,8 @@ TEST_CASE("Resolve an interface with tags in the context")
     struct BarTag : di::singleton_tag<Bar> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag>();
-    ctx.registerTag<BarTag, Bar, FooTag>();
+    ctx.put<FooTag>();
+    ctx.put<BarTag, Bar, FooTag>();
 
     REQUIRE(ctx.resolve<BarTag>() != nullptr);
 }
@@ -35,8 +35,8 @@ TEST_CASE("Resolve an object with tags in the context")
     struct BarTag : di::singleton_tag<Bar> {};
 
     di::context ctx;
-    ctx.registerTag<FooTag>();
-    ctx.registerTag<BarTag, FooTag>();
+    ctx.put<FooTag>();
+    ctx.put<BarTag, FooTag>();
 
     REQUIRE(ctx.resolve<BarTag>() != nullptr);
 }

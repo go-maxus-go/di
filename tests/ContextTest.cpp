@@ -22,7 +22,7 @@ TEST_CASE("Resolving of unregistered tag throws")
 TEST_CASE("Move constructor leaves an empty context")
 {
     di::context ctx;
-    ctx.registerTag<FooTag>();
+    ctx.put<FooTag>();
 
     auto newCtx = std::move(ctx);
 
@@ -33,7 +33,7 @@ TEST_CASE("Move constructor leaves an empty context")
 TEST_CASE("Assignment operator leaves an empty context")
 {
     di::context ctx;
-    ctx.registerTag<FooTag>();
+    ctx.put<FooTag>();
 
     di::context newCtx;
     newCtx = std::move(ctx);
@@ -45,10 +45,10 @@ TEST_CASE("Assignment operator leaves an empty context")
 TEST_CASE("Addition assignment operator merges two contexts")
 {
     di::context ctx1;
-    ctx1.registerTag<FooTag>();
+    ctx1.put<FooTag>();
 
     di::context ctx2;
-    ctx2.registerTag<BarTag>();
+    ctx2.put<BarTag>();
 
     ctx1 += std::move(ctx2);
 
@@ -61,10 +61,10 @@ TEST_CASE("Addition assignment operator merges two contexts")
 TEST_CASE("Merged context overwrites tags")
 {
     di::context ctx1;
-    ctx1.registerTag<BarTag>();
+    ctx1.put<BarTag>();
 
     di::context ctx2;
-    ctx2.registerTag<BarTag>([](auto&&) {
+    ctx2.put<BarTag>([](auto&&) {
         auto bar = std::make_unique<Bar>();
         bar->id = 1;
         return bar;
@@ -78,8 +78,8 @@ TEST_CASE("Merged context overwrites tags")
 TEST_CASE("Tags can be overwritten before they are resolved")
 {
     di::context ctx;
-    ctx.registerTag<BarTag>();
-    ctx.registerTag<BarTag>([](auto&&) {
+    ctx.put<BarTag>();
+    ctx.put<BarTag>([](auto&&) {
         auto bar = std::make_unique<Bar>();
         bar->id = 1;
         return bar;
@@ -91,10 +91,10 @@ TEST_CASE("Tags can be overwritten before they are resolved")
 TEST_CASE("Tags can't be overwritten after they are resolved")
 {
     di::context ctx;
-    ctx.registerTag<BarTag>();
+    ctx.put<BarTag>();
     ctx.resolve<BarTag>();
 
-    REQUIRE_THROWS(ctx.registerTag<BarTag>());
+    REQUIRE_THROWS(ctx.put<BarTag>());
 }
 
 TEST_CASE("Context destruction releases singleton objects")
@@ -102,7 +102,7 @@ TEST_CASE("Context destruction releases singleton objects")
     std::weak_ptr<Foo> weakPtr;
     {
         di::context ctx;
-        ctx.registerTag<FooTag>();
+        ctx.put<FooTag>();
 
         const auto foo = ctx.resolve<FooTag>();
         REQUIRE(foo.use_count() == 2);

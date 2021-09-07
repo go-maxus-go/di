@@ -12,8 +12,8 @@ di::context Brake::moduleContext()
 
     ctx += Engine::moduleContext();
 
-    ctx.registerTag<RegularBrakeTag, RegularBrake>();
-    ctx.registerTag<ParkingBrakeTag, ParkingBrake>();
+    ctx.put<RegularBrakeTag, RegularBrake>();
+    ctx.put<ParkingBrakeTag, ParkingBrake>();
 
     return ctx;
 }
