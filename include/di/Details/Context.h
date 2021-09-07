@@ -62,19 +62,21 @@ public:
     template<class TAG, class TYPE, class ... TAGS>
     void put()
     {
-        constexpr auto pointer = (decltype(ImplPointer<TYPE>((TAG*)(nullptr))))nullptr;
         // TODO: clean up conditions
         if constexpr (!std::is_base_of<BaseTag, TYPE>::value) {
             if constexpr (std::tuple_size<std::tuple<TAGS...>>::value == 0) {
                 if constexpr (HasDiTags<TYPE>::value) {
-                    put<TAG>(defaultCreator<TAG>(pointer, (typename TYPE::di_deps*)nullptr));
+                    auto creator = defaultCreator<TAG, TYPE>((typename TYPE::di_deps*)nullptr);
+                    put<TAG>(std::move(creator));
                 }
                 else {
-                    put<TAG>(defaultCreator<TAG>(pointer, (std::tuple<>*)nullptr));
+                    auto creator = defaultCreator<TAG, TYPE>((std::tuple<>*)nullptr);
+                    put<TAG>(std::move(creator));
                 }
             }
             else {
-                put<TAG>(defaultCreator<TAG>(pointer, (std::tuple<TAGS...>*)nullptr));
+                auto creator = defaultCreator<TAG, TYPE>((std::tuple<TAGS...>*)nullptr);
+                put<TAG>(std::move(creator));
             }
         }
         else
@@ -114,39 +116,19 @@ public:
 
 private:
     template<class TAG, class TYPE, class DEP>
-    static constexpr Creator<TAG> defaultCreator(
-            std::unique_ptr<TYPE> * pointer,
-            DEP *)
+    static constexpr Creator<TAG> defaultCreator(DEP *)
     {
-        return defaultCreator<TAG>(pointer, (std::tuple<DEP>*)nullptr);
-    }
-
-    template<class TAG, class TYPE, class DEP>
-    static constexpr Creator<TAG> defaultCreator(
-            std::shared_ptr<TYPE>* pointer,
-            DEP*)
-
-    {
-        return defaultCreator<TAG>(pointer, (std::tuple<DEP>*)nullptr);
+        return defaultCreator<TAG, TYPE>((std::tuple<DEP>*)nullptr);
     }
 
     template<class TAG, class TYPE, class ... TAGS>
-    static constexpr Creator<TAG> defaultCreator(
-            std::unique_ptr<TYPE>*,
-            std::tuple<TAGS...>*)
+    static constexpr Creator<TAG> defaultCreator(std::tuple<TAGS...>*)
     {
         return [](const Context& ctx) {
-            return std::make_unique<TYPE>((ctx.resolve<TAGS>())...);
-        };
-    }
-
-    template<class TAG, class TYPE, class ...TAGS>
-    static constexpr Creator<TAG> defaultCreator(
-            std::shared_ptr<TYPE>* pointer,
-            std::tuple<TAGS...>*)
-    {
-        return [](const Context& ctx) {
-            return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
+            if constexpr (IsBaseOfTemplate<SingletonTag, TAG>::value)
+                return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
+            else
+                return std::make_unique<TYPE>((ctx.resolve<TAGS>())...);
         };
     }
 

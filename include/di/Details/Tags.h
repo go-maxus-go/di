@@ -24,12 +24,4 @@ struct SingletonTag : BaseTag
     using pointer = std::shared_ptr<T>;
 };
 
-
-// TODO: move out of here
-template<class IMPL, class T>
-constexpr std::unique_ptr<IMPL>* ImplPointer(FactoryTag<T>*);
-
-template<class IMPL, class T>
-constexpr std::shared_ptr<IMPL>* ImplPointer(SingletonTag<T>*);
-
 } // namespace di::Details
