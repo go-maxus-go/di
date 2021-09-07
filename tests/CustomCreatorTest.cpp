@@ -30,11 +30,21 @@ TEST_CASE("An exception is thrown if factory custom creator returns null")
     REQUIRE_THROWS(ctx.resolve<FooTag>());
 }
 
-TEST_CASE("Custom creator resolves an object tag")
+TEST_CASE("Custom creator resolves an object tag using make_unique")
 {
     di::context ctx;
     ctx.put<FooTag>([](const di::context&) {
         return std::make_unique<Foo>();
+    });
+
+    REQUIRE(ctx.resolve<FooTag>() != nullptr);
+}
+
+TEST_CASE("Custom creator resolves an object tag using make_shared")
+{
+    di::context ctx;
+    ctx.put<FooTag>([](const di::context&) {
+        return std::make_shared<Foo>();
     });
 
     REQUIRE(ctx.resolve<FooTag>() != nullptr);
@@ -53,7 +63,7 @@ TEST_CASE("Custom creator resolves an interface tag")
 
     di::context ctx;
     ctx.put<FooTag>([](const di::context&) {
-        return std::make_unique<Foo>();
+        return std::make_shared<Foo>();
     });
 
     const auto foo = ctx.resolve<FooTag>();

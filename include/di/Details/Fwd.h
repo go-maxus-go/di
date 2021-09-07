@@ -8,10 +8,9 @@ namespace di::Details {
 
 class Context;
 
-template<class TAG> using Type = typename TAG::type;
-template<class TYPE> using Pointer = std::unique_ptr<TYPE>;
-template<class TAG> using ObjectPtr = Pointer<Type<TAG>>;
-template<class TAG> using Creator = std::function<ObjectPtr<TAG>(const Context&)>;
+template<class Tag> using Type = typename Tag::type;
+template<class Tag> using Pointer = typename Tag::pointer;
+template<class Tag> using Creator = std::function<Pointer<Tag>(const Context&)>;
 
 class BaseHolder;
 using BaseHolderPtr = std::unique_ptr<BaseHolder>;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <functional>
 
 
 namespace di::Details {
@@ -11,16 +10,18 @@ struct BaseTag
     BaseTag() = delete;
 };
 
-template<class TYPE>
+template<class T>
 struct FactoryTag : BaseTag
 {
-    using type = TYPE;
+    using type = T;
+    using pointer = std::unique_ptr<T>;
 };
 
-template<class TYPE>
+template<class T>
 struct SingletonTag : BaseTag
 {
-    using type = TYPE;
+    using type = T;
+    using pointer = std::shared_ptr<T>;
 };
 
-} // namespace di::Details {
+} // namespace di::Details
