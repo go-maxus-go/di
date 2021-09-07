@@ -11,8 +11,6 @@ struct Bar {
 };
 struct BarTag : di::singleton_tag<Bar> {};
 
-} // anonymous namespace
-
 TEST_CASE("Resolving of unregistered tag throws")
 {
     di::context ctx;
@@ -111,3 +109,5 @@ TEST_CASE("Context destruction releases singleton objects")
     }
     REQUIRE(weakPtr.lock() == nullptr);
 }
+
+} // anonymous namespace

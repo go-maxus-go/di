@@ -12,8 +12,6 @@ struct IQux
     virtual void fun() = 0;
 };
 
-} // anonymous namespace
-
 TEST_CASE("Resolve an interface tag with one tag di_deps as a type")
 {
     struct Qux : IQux {
@@ -65,3 +63,5 @@ TEST_CASE("Resolve an interface tag with several tag di_deps")
 
     REQUIRE(ctx.resolve<QuxTag>() != nullptr);
 }
+
+} // anonymous namespace

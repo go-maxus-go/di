@@ -6,8 +6,6 @@ namespace {
 struct Foo {};
 struct FooTag : di::singleton_tag<Foo> {};
 
-} // anonymous namespace
-
 TEST_CASE("Resolve an interface with tags in the context")
 {
     struct IBar {
@@ -40,3 +38,5 @@ TEST_CASE("Resolve an object with tags in the context")
 
     REQUIRE(ctx.resolve<BarTag>() != nullptr);
 }
+
+} // anonymous namespace

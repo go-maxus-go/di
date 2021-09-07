@@ -6,8 +6,6 @@ namespace {
 struct Foo {};
 struct FooTag : di::singleton_tag<Foo> {};
 
-} // anonymous namespace
-
 TEST_CASE("An exception is thrown if singleton custom creator returns null")
 {
     di::context ctx;
@@ -70,3 +68,5 @@ TEST_CASE("Custom creator resolves an interface tag")
     REQUIRE(foo != nullptr);
     REQUIRE(typeid(foo.get()) == typeid(IFoo*));
 }
+
+} // anonymous namespace

@@ -1,6 +1,8 @@
 #include "Common.h"
 
 
+namespace {
+
 TEST_CASE("Resolving a factory tag with objects")
 {
     struct Foo {};
@@ -57,3 +59,5 @@ TEST_CASE("Resolving a factory tag with interfaces")
     REQUIRE(bar1.get() != bar2.get());
     REQUIRE(bar1->ifoo() != bar2->ifoo());
 }
+
+} // anonymous namespace

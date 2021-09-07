@@ -29,8 +29,6 @@ struct Bar
 };
 struct BarTag : di::singleton_tag<Bar> {};
 
-} // anonymous namespace
-
 TEST_CASE("Custom creator overwrites di_deps from the object")
 {
     di::context ctx;
@@ -55,3 +53,5 @@ TEST_CASE("Dependencies passed to the context overwrite di_deps from the object"
     const auto bar = ctx.resolve<BarTag>();
     REQUIRE(bar->foo->fun() == 2);
 }
+
+} // anonymous namespace
