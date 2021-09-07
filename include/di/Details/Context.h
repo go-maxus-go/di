@@ -58,20 +58,27 @@ public:
      * The resolved value will get dependencies from the provided tags or the TYPE "di".
      * The "di" tag list will be overwritten by TAGS provided to the function.
      */
+    // TODO: change TAGS to DEPS
     template<class TAG, class TYPE, class ... TAGS>
     void put()
     {
-        if constexpr (std::is_base_of<BaseTag, TYPE>::value)
-            return put<TAG, Type<TAG>, TYPE, TAGS...>();
+        constexpr auto pointer = (decltype(ImplPointer<TYPE>((TAG*)(nullptr))))nullptr;
+        // TODO: clean up conditions
+        if constexpr (!std::is_base_of<BaseTag, TYPE>::value) {
+            if constexpr (std::tuple_size<std::tuple<TAGS...>>::value == 0) {
+                if constexpr (HasDiTags<TYPE>::value) {
+                    put<TAG>(defaultCreator<TAG>(pointer, (typename TYPE::di_deps*)nullptr));
+                }
+                else {
+                    put<TAG>(defaultCreator<TAG>(pointer, (std::tuple<>*)nullptr));
+                }
+            }
+            else {
+                put<TAG>(defaultCreator<TAG>(pointer, (std::tuple<TAGS...>*)nullptr));
+            }
+        }
         else
-            put<TAG>([](const Context & ctx) {
-                constexpr auto tagsCount = std::tuple_size<std::tuple<TAGS...>>::value;
-                constexpr auto hasDi = HasDiTags<TYPE>::value;
-                constexpr auto useDi = tagsCount == 0 && hasDi;
-                constexpr std::tuple<TAGS...> * dependency = nullptr;
-                constexpr auto selector = std::integral_constant<bool, useDi>();
-                return creatorFromTags<TYPE>(ctx, dependency, selector);
-            });
+            put<TAG, Type<TAG>, TYPE, TAGS...>();
     }
 
     /*
@@ -106,33 +113,41 @@ public:
     }
 
 private:
-    template<class TYPE, class ... TAGS>
-    static constexpr auto creatorFromTags(
-            const Context & ctx,
-            const std::tuple<TAGS...>*,
-            std::true_type)
+    template<class TAG, class TYPE, class DEP>
+    static constexpr Creator<TAG> defaultCreator(
+            std::unique_ptr<TYPE> * pointer,
+            DEP *)
     {
-        constexpr typename TYPE::di_deps * dependency = nullptr;
-        return creatorFromTags<TYPE>(ctx, dependency, std::false_type());
+        return defaultCreator<TAG>(pointer, (std::tuple<DEP>*)nullptr);
     }
 
-    template<class TYPE, class TAG>
-    static constexpr auto creatorFromTags(
-            const Context & ctx,
-            const TAG *,
-            std::false_type)
+    template<class TAG, class TYPE, class DEP>
+    static constexpr Creator<TAG> defaultCreator(
+            std::shared_ptr<TYPE>* pointer,
+            DEP*)
+
     {
-        constexpr std::tuple<TAG> * dependency = nullptr;
-        return creatorFromTags<TYPE>(ctx, dependency, std::false_type());
+        return defaultCreator<TAG>(pointer, (std::tuple<DEP>*)nullptr);
     }
 
-    template<class TYPE, class ... TAGS>
-    static constexpr auto creatorFromTags(
-            const Context & ctx,
-            const std::tuple<TAGS...>*,
-            std::false_type)
+    template<class TAG, class TYPE, class ... TAGS>
+    static constexpr Creator<TAG> defaultCreator(
+            std::unique_ptr<TYPE>*,
+            std::tuple<TAGS...>*)
     {
-        return std::make_unique<TYPE>((ctx.resolve<TAGS>())...);
+        return [](const Context& ctx) {
+            return std::make_unique<TYPE>((ctx.resolve<TAGS>())...);
+        };
+    }
+
+    template<class TAG, class TYPE, class ...TAGS>
+    static constexpr Creator<TAG> defaultCreator(
+            std::shared_ptr<TYPE>* pointer,
+            std::tuple<TAGS...>*)
+    {
+        return [](const Context& ctx) {
+            return std::make_shared<TYPE>((ctx.resolve<TAGS>())...);
+        };
     }
 
 private:

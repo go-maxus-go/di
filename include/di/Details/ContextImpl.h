@@ -65,7 +65,7 @@ private:
     template<class TAG>
     const char * name() const
     {
-        return typeid(TAG).name();
+        return typeid(TAG).raw_name();
     }
 
     template<class TAG>
