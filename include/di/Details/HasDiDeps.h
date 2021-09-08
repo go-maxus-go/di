@@ -7,7 +7,7 @@ namespace di::Details
 {
 
 template<class T>
-class HasDiTags
+class HasDiDeps
 {
     template<class U>
     static std::true_type test(typename U::di_deps*);

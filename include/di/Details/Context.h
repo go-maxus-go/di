@@ -4,7 +4,7 @@
 
 #include "Fwd.h"
 #include "Tags.h"
-#include "HasDiTags.h"
+#include "HasDiDeps.h"
 #include "ContextImpl.h"
 #include "TypeIdentity.h"
 
@@ -113,7 +113,7 @@ private:
     static constexpr Creator<TAG> defaultCreator()
     {
         if constexpr (sizeof...(DEPS) == 0) {
-            if constexpr (HasDiTags<TYPE>::value)
+            if constexpr (HasDiDeps<TYPE>::value)
                 return defaultCreator<TAG, TYPE>(Ti<typename TYPE::di_deps>());
             else
                 return defaultCreator<TAG, TYPE>(Ti<std::tuple<>>());
