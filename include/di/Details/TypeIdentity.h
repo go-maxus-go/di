@@ -4,8 +4,11 @@
 namespace di::Details {
 
 template<class T>
-struct Boob {
+struct TypeIdentity {
     using type = T;
 };
+
+template<class T>
+using Ti = TypeIdentity<T>;
 
 } // namespace di::Details

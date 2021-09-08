@@ -3,10 +3,10 @@
 #include <type_traits>
 
 #include "Fwd.h"
-#include "Boob.h"
 #include "Tags.h"
 #include "HasDiTags.h"
 #include "ContextImpl.h"
+#include "TypeIdentity.h"
 
 
 namespace di::Details {
@@ -114,22 +114,22 @@ private:
     {
         if constexpr (sizeof...(DEPS) == 0) {
             if constexpr (HasDiTags<TYPE>::value)
-                return defaultCreator<TAG, TYPE>(Boob<typename TYPE::di_deps>());
+                return defaultCreator<TAG, TYPE>(Ti<typename TYPE::di_deps>());
             else
-                return defaultCreator<TAG, TYPE>(Boob<std::tuple<>>());
+                return defaultCreator<TAG, TYPE>(Ti<std::tuple<>>());
         }
         else
-            return defaultCreator<TAG, TYPE>(Boob<std::tuple<DEPS...>>());
+            return defaultCreator<TAG, TYPE>(Ti<std::tuple<DEPS...>>());
     }
 
     template<class TAG, class TYPE, class DEP>
-    static constexpr Creator<TAG> defaultCreator(Boob<DEP>)
+    static constexpr Creator<TAG> defaultCreator(Ti<DEP>)
     {
-        return defaultCreator<TAG, TYPE>(Boob<std::tuple<DEP>>());
+        return defaultCreator<TAG, TYPE>(Ti<std::tuple<DEP>>());
     }
 
     template<class TAG, class TYPE, class ...TAGS>
-    static constexpr Creator<TAG> defaultCreator(Boob<std::tuple<TAGS...>>)
+    static constexpr Creator<TAG> defaultCreator(Ti<std::tuple<TAGS...>>)
     {
         return [](const Context& ctx) {
             if constexpr (IsBaseOfTemplate<SingletonTag, TAG>::value)

@@ -9,3 +9,4 @@
 // Type & t -> Type& t
 // Get rid of IMplType
 // (TYPE*)nullptr -> std::declval<TYPE>()
+// Change logic_error to runtime_error
