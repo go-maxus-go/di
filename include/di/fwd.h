@@ -16,18 +16,18 @@ class SingletonTag;
 } // namespace Details
 
 /*
- * The class containing all dependencies.
+ * Holds and resolves dependencies.
 */
 using context = Details::Context;
 
 /*
- * This tag is used for creating a new instance of a class on each call.
+ * Is used for creating a new instance of a class on each call.
 */
 template<class T>
 using factory_tag = Details::FactoryTag<T>;
 
 /*
- * This tag is used for creating the only one instance of a class.
+ * Is used for creating the only one instance of a class.
  * The instance will be cached and returned on each call.
 */
 template<class T>

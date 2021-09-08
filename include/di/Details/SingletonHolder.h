@@ -1,8 +1,7 @@
 #pragma once
 
-#include <exception>
-
 #include "Fwd.h"
+#include "Error.h"
 #include "BaseHolder.h"
 
 
@@ -27,7 +26,7 @@ public:
             return result;
         result = creator(context);
         if (result == nullptr)
-            throw std::logic_error("di: creator produces null pointer object");
+            throw Error("di: creator produces null pointer object");
         return result;
     }
 

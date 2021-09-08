@@ -12,7 +12,7 @@
 namespace di::Details {
 
 /*
- * This class should be used for managing dependencies.
+ * This class is used for managing dependencies.
  * It holds dependencies and resolves them.
  * It's a good idea to have the only one instance of this class for beginning.
  */
