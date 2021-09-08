@@ -99,13 +99,10 @@ private:
     template<class TAG>
     auto castObject(std::any object) const
     {
-        using Sp = std::shared_ptr<Type<TAG>>;
-        using Up = std::unique_ptr<Type<TAG>>;
-
         if constexpr (isSingletonTag<TAG>())
-            return std::any_cast<Sp>(std::move(object));
+            return std::any_cast<Pointer<TAG>>(std::move(object));
         else
-            return Up(std::any_cast<Type<TAG>*>(object));
+            return Pointer<TAG>(std::any_cast<Ref<TAG>*>(object));
     }
 
     template<class TAG>

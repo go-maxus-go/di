@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include "Fwd.h"
 #include "Tags.h"
 #include "HasDiDeps.h"
@@ -69,7 +67,7 @@ public:
         if constexpr (!std::is_base_of<BaseTag, TYPE>::value)
             put<TAG>(defaultCreator<TAG, TYPE, DEPS...>());
         else
-            put<TAG, Type<TAG>, TYPE, DEPS...>();
+            put<TAG, Ref<TAG>, TYPE, DEPS...>();
     }
 
     /*
@@ -79,7 +77,7 @@ public:
     template<class TAG>
     void put()
     {
-        put<TAG, Type<TAG>>();
+        put<TAG, Ref<TAG>>();
     }
 
     /*

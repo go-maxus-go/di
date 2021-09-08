@@ -7,7 +7,7 @@ namespace di::Details
 {
 
 template<template<typename...> class Base, typename Derived>
-struct IsBaseOfTemplate
+class IsBaseOfTemplate
 {
     template<typename... Ts>
     static constexpr std::true_type test(Base<Ts...> *);

@@ -32,7 +32,7 @@ public:
 
 private:
     Creator<TAG> creator;
-    mutable std::shared_ptr<Type<TAG>> result;
+    mutable Pointer<TAG> result;
 };
 
 } // namespace di::details

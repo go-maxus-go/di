@@ -13,14 +13,14 @@ struct BaseTag
 template<class T>
 struct FactoryTag : BaseTag
 {
-    using type = T;
+    using reference = T;
     using pointer = std::unique_ptr<T>;
 };
 
 template<class T>
 struct SingletonTag : BaseTag
 {
-    using type = T;
+    using reference = T;
     using pointer = std::shared_ptr<T>;
 };
 

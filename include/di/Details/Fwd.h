@@ -8,7 +8,7 @@ namespace di::Details {
 
 class Context;
 
-template<class TAG> using Type = typename TAG::type;
+template<class TAG> using Ref = typename TAG::reference;
 template<class TAG> using Pointer = typename TAG::pointer;
 template<class TAG> using Creator = std::function<Pointer<TAG>(const Context&)>;
 
