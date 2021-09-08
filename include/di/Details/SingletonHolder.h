@@ -26,7 +26,7 @@ public:
             return result;
         result = creator(context);
         if (result == nullptr)
-            throw Error("di: creator produces null pointer object");
+            throw Error("Creator returned null");
         return result;
     }
 

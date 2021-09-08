@@ -32,7 +32,7 @@ private:
     {
         auto object = creator(context);
         if (object == nullptr)
-            throw Error("di: creator produces null pointer object");
+            throw Error("Creator returned null");
         return object;
     }
 
