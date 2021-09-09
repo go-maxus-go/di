@@ -12,7 +12,7 @@ struct IQux
     virtual void fun() = 0;
 };
 
-TEST_CASE("Resolve an interface tag with one tag di_deps as a type")
+TEST_CASE("Resolve an abstract reference tag with one tag di_deps as a type")
 {
     struct Qux : IQux {
         using di_deps = FooTag;
@@ -28,7 +28,7 @@ TEST_CASE("Resolve an interface tag with one tag di_deps as a type")
     REQUIRE(ctx.resolve<QuxTag>() != nullptr);
 }
 
-TEST_CASE("Resolve an interface tag with one tag di_deps as a tuple")
+TEST_CASE("Resolve an abstract reference tag with one tag in di_deps tuple")
 {
     struct Qux : IQux {
         using di_deps = std::tuple<FooTag>;
@@ -44,7 +44,7 @@ TEST_CASE("Resolve an interface tag with one tag di_deps as a tuple")
     REQUIRE(ctx.resolve<QuxTag>() != nullptr);
 }
 
-TEST_CASE("Resolve an interface tag with several tag di_deps")
+TEST_CASE("Resolve an abstract reference tag with several tags in di_deps")
 {
     struct Bar {};
     struct BarTag : di::singleton_tag<Bar> {};

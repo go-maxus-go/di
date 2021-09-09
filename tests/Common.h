@@ -6,6 +6,3 @@
 
 #include <di/tags.h>
 #include <di/context.h>
-
-template<class ...Ts>
-void unused(Ts&&...) {}

@@ -12,15 +12,15 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 
-file (GLOB_RECURSE CPP_FILES
+file(GLOB_RECURSE CPP_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/old/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp
 )
-file (GLOB_RECURSE H_FILES
+file(GLOB_RECURSE H_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/di/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.hpp
 )
-set (SOURCE_FILES ${CPP_FILES} ${H_FILES})
+set(SOURCE_FILES ${CPP_FILES} ${H_FILES})
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

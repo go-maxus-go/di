@@ -6,7 +6,7 @@ namespace {
 struct Foo {};
 struct FooTag : di::singleton_tag<Foo> {};
 
-TEST_CASE("Resolve an interface with tags in the context")
+TEST_CASE("Resolve an abstract reference tag with dependencies in the context")
 {
     struct IBar {
         virtual ~IBar() = default;
@@ -25,7 +25,7 @@ TEST_CASE("Resolve an interface with tags in the context")
     REQUIRE(ctx.resolve<BarTag>() != nullptr);
 }
 
-TEST_CASE("Resolve an object with tags in the context")
+TEST_CASE("Resolve a concrete reference tag with dependencies in the context")
 {
     struct Bar {
         Bar(std::shared_ptr<Foo>) {}

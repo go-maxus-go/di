@@ -3,7 +3,7 @@
 
 namespace {
 
-TEST_CASE("Resolving a factory tag with objects")
+TEST_CASE("Resolve a factory concrete reference tag")
 {
     struct Foo {};
     struct FooTag : di::factory_tag<Foo> {};
@@ -26,7 +26,7 @@ TEST_CASE("Resolving a factory tag with objects")
     REQUIRE(bar1->foo.get() != bar2->foo.get());
 }
 
-TEST_CASE("Resolving a factory tag with interfaces")
+TEST_CASE("Resolve a factory abstract type tag")
 {
     struct IFoo {
         virtual ~IFoo() = default;

@@ -28,7 +28,7 @@ TEST_CASE("An exception is thrown if factory custom creator returns null")
     REQUIRE_THROWS(ctx.resolve<FooTag>());
 }
 
-TEST_CASE("Custom creator resolves an object tag using make_unique")
+TEST_CASE("Custom creator resolves a concrete reference tag using make_unique")
 {
     di::context ctx;
     ctx.put<FooTag>([](const di::context&) {
@@ -38,7 +38,7 @@ TEST_CASE("Custom creator resolves an object tag using make_unique")
     REQUIRE(ctx.resolve<FooTag>() != nullptr);
 }
 
-TEST_CASE("Custom creator resolves an object tag using make_shared")
+TEST_CASE("Custom creator resolves an concrete reference tag using make_shared")
 {
     di::context ctx;
     ctx.put<FooTag>([](const di::context&) {
@@ -48,7 +48,7 @@ TEST_CASE("Custom creator resolves an object tag using make_shared")
     REQUIRE(ctx.resolve<FooTag>() != nullptr);
 }
 
-TEST_CASE("Custom creator resolves an interface tag")
+TEST_CASE("Custom creator resolves an abstract reference tag")
 {
     struct IFoo {
         virtual ~IFoo() = default;

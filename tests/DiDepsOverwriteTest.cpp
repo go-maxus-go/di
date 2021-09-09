@@ -29,7 +29,7 @@ struct Bar
 };
 struct BarTag : di::singleton_tag<Bar> {};
 
-TEST_CASE("Custom creator overwrites di_deps from the object")
+TEST_CASE("Custom creator overwrites di_deps from the concrete type")
 {
     di::context ctx;
     ctx.put<Foo1Tag, Foo1>();
@@ -43,7 +43,7 @@ TEST_CASE("Custom creator overwrites di_deps from the object")
     REQUIRE(bar->foo->fun() == 2);
 }
 
-TEST_CASE("Dependencies passed to the context overwrite di_deps from the object")
+TEST_CASE("Context dependencies overwrite di_deps from the concrete type")
 {
     di::context ctx;
     ctx.put<Foo1Tag, Foo1>();
