@@ -8,39 +8,38 @@ The last but not the least goal is to minimize the effect on the compilation tim
 
 ## Example
 ```cpp
+#include <memory>
+#include <iostream>
+
+#include <di/tags.h>
 #include <di/context.h>
 
-struct Interface
-{
-    virtual ~Interface() = default;
+struct IFoo {
+	virtual ~IFoo() = delete;
+	virtual void fun() = 0;
 };
 
-class Implementation : public Interface {};
+struct Foo : IFoo {
+	void fun() override {
+		std::cout << "Have fun" << std::endl;
+	}
+};
 
-// Bind the interface to a lightweight tag.
-DECLARE_DI_TAG(InterfaceTag, Interface);
+struct FooTag : di::singleton_tag<IFoo> {};
 
-int main()
-{
-    // Create the context
-    auto ctx = di::Context();
+int main() {
+    di::context ctx;
+    ctx.put<FooTag, Foo>();
 
-    // Register the tag
-    ctx.put<InterfaceTag, Implementation>();
-
-    // Resolve the tag
-    auto object = ctx.resolve<InterfaceTag>();
+    auto foo = ctx.resolve<FooTag>();
+	foo->fun();
 }
 ```
 
-## Full project example
-You can find more detailed example in the **example** folder. Also you can build and run it by using:
-
+## Client/Services example
+In **example** folder you can find an implementation of [Client/Services](https://en.wikipedia.org/wiki/Dependency_injection#Roles) example from wiki. The example can build it with CMake.
 ```
-cd example && cmake . && make && ./example
+cd example
+cmake .
+make
 ```
-// TODO:
-Figure out whether unique_ptrs work with singleton
-Check test cases
-Extend README
-Fix example
