@@ -1,8 +1,10 @@
-# di
-The simplest **C++17** runtime dependency injection library.
+# What's the DI?
+DI is a lightweight header-only runtime [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) library for C++17.
 
 ## Purpose
-The main goal of **di** is to keep classes declarations separate from their definitions in order to reduce compilation time.
+The main goal of DI is to provide a way of managing dependencies with minimum affordance.
+The second important goal is to separate abstract classes from their implementations.
+The last but not the least goal is to minimize the effect on the compilation time.
 
 ## Example
 ```cpp
