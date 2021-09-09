@@ -13,29 +13,12 @@ include_directories(
 
 file(GLOB CPP_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/App/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/App/Impl/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Car/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Car/Impl/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Impl/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Brake/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Brake/Impl/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Util/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Util/Impl/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Client/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Services/*.cpp
 )
 file(GLOB H_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/App/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/App/Impl/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Car/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Car/Impl/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Impl/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Brake/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Brake/Impl/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Util/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Util/Impl/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Client/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Services/*.h
 )
 set(SOURCE_FILES ${CPP_FILES} ${H_FILES})
 

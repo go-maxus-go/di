@@ -1,14 +1,21 @@
-#include <di/di.h>
+#include <di/context.h>
 
-#include "App/Module.h"
-#include "App/IApplication.h"
+#include "Client/Client.h"
+#include "Client/ClientTags.h"
+#include "Client/ClientModule.h"
+
+#include "Services/ServicesModule.h"
 
 
 int main()
 {
-    auto ctx = App::moduleContext();
+    di::context ctx;
+    ctx += Client::createClientContext();
+    ctx += Services::createServicesContext();
 
-    auto app = ctx.resolve<App::ApplicationTag>();
+    const auto client = ctx.resolve<Client::ClientTag>();
+    client->useServiceA();
+    client->useServiceB();
 
-    return app->exec();
+    return 0;
 }
