@@ -12,9 +12,8 @@ Also DI provides ```di::singleton_tag``` and ```di::factory_tag```.
 Tag are a lightweight structures with a reference to the result type.
 The dependencies management is performed by the context based on provided tags.
 
-### Hello world
+## Hello world
 In this small example a concrete class ```Foo``` will be built by ```di::context```.
-
 As the first step, a singleton tag ```FooTag``` should be defined.
 ```cpp
 #include <di/tags.h>
@@ -36,13 +35,11 @@ If the context resolve is called multiple times the same result will be returned
 std::shared_ptr<Foo> foo = ctx.resolve<FooTag>();
 assert(foo == ctx.resolve<FooTag>());
 ```
-
-The context contains information about interfaces, implementations and tags.
+[//]: # (The context contains information about interfaces, implementations and tags.
 A tag is like a key for ```di::context```.
 It tells ```di::context``` what class and how it should the reference type build.
 Tags
-
-DI works with C++17
+DI works with C++17)
 
 ## Example
 ```cpp
@@ -81,5 +78,5 @@ cd example
 cmake .
 make
 ```
-## Compatible compilers
-DI supports gcc, clang, msvc. Versions are needed.
+[//]: # (## Compatible compilers
+	DI supports gcc, clang, msvc. Versions are needed.)
