@@ -50,14 +50,14 @@ DI works with C++17)
 #include <di/context.h>
 
 struct IFoo {
-	virtual ~IFoo() = delete;
-	virtual void fun() = 0;
+    virtual ~IFoo() = delete;
+    virtual void fun() = 0;
 };
 
 struct Foo : IFoo {
-	void fun() override {
-		std::cout << "Have fun" << std::endl;
-	}
+    void fun() override {
+        std::cout << "Have fun" << std::endl;
+    }
 };
 
 struct FooTag : di::singleton_tag<IFoo> {};
@@ -67,7 +67,7 @@ int main() {
     ctx.put<FooTag, Foo>();
 
     auto foo = ctx.resolve<FooTag>();
-	foo->fun();
+    foo->fun();
 }
 ```
 
@@ -79,4 +79,4 @@ cmake .
 make
 ```
 [//]: # (## Compatible compilers
-	DI supports gcc, clang, msvc. Versions are needed.)
+    DI supports gcc, clang, msvc. Versions are needed.)
