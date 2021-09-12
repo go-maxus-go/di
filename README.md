@@ -35,11 +35,6 @@ If the context resolve is called multiple times the same result will be returned
 std::shared_ptr<Foo> foo = ctx.resolve<FooTag>();
 assert(foo == ctx.resolve<FooTag>());
 ```
-[//]: # (The context contains information about interfaces, implementations and tags.
-A tag is like a key for ```di::context```.
-It tells ```di::context``` what class and how it should the reference type build.
-Tags
-DI works with C++17)
 
 ## Example
 ```cpp
@@ -78,5 +73,5 @@ cd example
 cmake .
 make
 ```
-[//]: # (## Compatible compilers
-    DI supports gcc, clang, msvc. Versions are needed.)
+## Compatible compilers
+DI requires C++17 or higher. DI is tested on GCC 8.1, Clang 12.0, MSVC 15.9.
