@@ -7,7 +7,7 @@ The second important goal is to separate abstract classes from their implementat
 The last but not the least goal is to minimize the effect on the compilation time.
 
 ## How does DI work?
-DI provides a class ```di::context``` also it might be better known as "injector".
+DI provides a class ```di::context``` it might be better known as "injector".
 Also DI provides ```di::singleton_tag``` and ```di::factory_tag```.
 Tag are a lightweight structures with a reference to the result type.
 The dependencies management is performed by the context based on provided tags.
