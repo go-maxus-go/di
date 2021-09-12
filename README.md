@@ -45,7 +45,7 @@ assert(foo == ctx.resolve<FooTag>());
 #include <di/context.h>
 
 struct IFoo {
-    virtual ~IFoo() = delete;
+    virtual ~IFoo() = default;
     virtual void fun() = 0;
 };
 
